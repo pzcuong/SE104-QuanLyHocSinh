@@ -289,6 +289,7 @@ html(lang='en')
             "KT1T": result.result[i].KT1T, 
             "KTGK": result.result[i].KTGK, 
             "KTCK": result.result[i].KTCK,
+            "DiemTB": result.result[i].DiemTB
           })
         }
 
@@ -298,9 +299,19 @@ html(lang='en')
           data: data,
           rowHeaders: true,
           colHeaders: false,
-          colHeaders: ["MSHS", "Họ và tên", "Điểm miệng", "Điểm 15 phút", "Điểm 1 tiết", "Điểm GK", "Điểm CK"],
+          colHeaders: ["MSHS", "Họ và tên", "Điểm miệng", "Điểm 15 phút", "Điểm 1 tiết", "Điểm GK", "Điểm CK", "Điểm TB"],
           columnSorting: true,
-          sortIndicator: true
+          sortIndicator: true,
+          columns: [
+            {data: 'MSHS', readOnly: true},
+            {data: 'HoTen', readOnly: true},
+            {data: 'DM'},
+            {data: 'KT15P'},
+            {data: 'KT1T'},
+            {data: 'KTGK'},
+            {data: 'KTCK'},
+            {data: 'DiemTB', readOnly: true}
+          ],
         });
       }
     

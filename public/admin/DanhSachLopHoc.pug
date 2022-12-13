@@ -194,7 +194,7 @@ html(lang='en')
                     .page-header-student-title
                       h3.page-title Lớp
                     .card-body_header-icon
-                      a.btn(href='/admin/ThemLopHoc/')
+                      a.btn(href='/public/auth/edit-classroom.html')
                         i.fa-solid.fa-plus
                 .card-body_body
                   .Data-Table
@@ -225,8 +225,7 @@ html(lang='en')
                                     td 2021 - 2022
                                     td.text-end
                                         .action
-                                            - var functionName_1 = "XoaLopHoc('" + LopHoc.MaLop + "')"
-                                            a.delete-btn(href='#',onclick=functionName_1)
+                                            a.delete-btn(href='#')
                                                 i.fa-solid.fa-trash
                                             - var functionName = "XemThongTinLop('" + LopHoc.MaLop + "')"
                                             a.edit-btn.js-edit-student(href='#' onclick=functionName)
@@ -296,4 +295,3 @@ html(lang='en')
     script(src='/public/source/js/main.js')
     script(src='/public/source/js/edit-student.js ')
     script(src='/public/source/js/students.js ')
-    script(src='/public/source/js/edit-classroom.js')

@@ -175,12 +175,6 @@ html(lang='en')
             .submit-form-student.submit
               .form-group.local-form
                 select.form-control-edit-btn(required='')
-                  option Khối 10
-                  option Khối 11
-                  option Khối 12
-            .submit-form-student.submit
-              .form-group.local-form
-                select.form-control-edit-btn(required='')
                   option A1
                   option A2
                   option A3
@@ -201,7 +195,7 @@ html(lang='en')
                     .page-header-student-title
                       h3.page-title Học Sinh
                     .card-body_header-icon
-                      a.btn(href='/admin/ThemTaiKhoan/')
+                      a.btn(href='./edit-student.html')
                         i.fa-solid.fa-plus
                 .card-body_body
                   .Data-Table
@@ -244,8 +238,7 @@ html(lang='en')
                                 td #{user.DiaChi}
                                 td.text-end
                                   .action
-                                    - var functionName_1 = "XoaHocSinh('" + user.MaHS + "')"
-                                     a.delete-btn(href='#',onclick=functionName_1)
+                                    a.delete-btn(href='#')
                                         i.fa-solid.fa-trash
                                     - var functionName = 'LayThongTin(' + user.MaHS + ')';
                                     a.edit-btn.js-edit-student(href='#', onclick=functionName)
@@ -323,25 +316,7 @@ html(lang='en')
                   .image-submit
                     button.search-btn.btn(id="submit-button" onclick="CapNhatThongTin()") 
                       | Xác nhận
-.Bd-content
-          span
-            strong Học kỳ: 
-            select#HocKy(onchange='LayThongTin()')
-              option(value='') Chọn học kỳ
-              option(value='1') Học kỳ 1
-              option(value='2') Học kỳ 2
-          span
-            strong Năm học: 
-            select#NamHoc(onchange='LayThongTin()')
-              option(value='') Chọn năm học
-          span
-            strong Môn học: 
-            select#MonHoc(onchange='LayThongTin()')
-              option(value='') Chọn môn học
-          //- div
-          //-   button#GetData(onclick='LayThongTin()') Lấy thông tin
-          .container.welcome-div
-            #employee
+
     script(src='/public/source/js/main.js')
     script(src='/public/source/js/edit-student.js ')
     script(src='/public/source/js/students.js ')

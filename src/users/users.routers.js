@@ -53,6 +53,8 @@ router.route('/NhapDiem/:MaLop/')
 	.post(isAuthGiaoVien, userController.DanhSachDiem)
 	.put(isAuthGiaoVien, userController.NhapDiem);
 
+router.post('/TinhDiemTrungBinh/:MaLop/', isAuthGiaoVien, userController.TinhDiemTrungBinh);
+
 router.get('/XemThongBao', isAuth, userController.DanhSachBaiDang);
 
 router.get('/XemThongBao/:MaBaiDang/', isAuth, userController.XemNoiDungBaiDang);

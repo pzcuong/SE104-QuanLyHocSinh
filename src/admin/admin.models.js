@@ -186,8 +186,7 @@ async function ThemGiaoVienVaoLop(MaGV, MaLop, MaMH) {
 
 async function ThemBaiDang(data) {
     try {
-
-        let SQLQuery = `set dateformat dmy; insert into BaiDang 
+        let SQLQuery = `insert into BaiDang 
         (NoiDung, NgayDang, TieuDe) 
         values (N'${data.NoiDung}', N'${data.NgayDang}', N'${data.TieuDe}')`;
 
@@ -268,64 +267,6 @@ async function XoaBaiDang(MaBD) {
     }
 }
 
-async function XoaHocSinh(MaHS) {
-    try {
-
-        let SQLQuery = `delete from HOCSINH where MaHS = N'${MaHS}'`;
-        let result = await TruyVan("Admin", SQLQuery);
-        let SQLQuery_XT = `delete from XacThuc where MaND = N'${MaHS}'`;
-        let result_XT = await TruyVan("Admin", SQLQuery_XT);
-        console.log("Xóa học sinh", result_XT);
-        return result;
-    } catch(err) {
-        console.log(err);
-        return ({ 
-            statusCode: 400,
-            message: 'Lỗi truy vấn SQL!',
-            alert: 'Kiểm tra lại câu lệnh SQL!'
-        });
-    }
-}
-
-async function XoaGiaoVien(MaGV) {
-    try {
-
-        let SQLQuery = `delete from GIAOVIEN where MaGV = N'${MaGV}'`;
-        let result = await TruyVan("Admin", SQLQuery);
-        let SQLQuery_XT = `delete from XacThuc where MaND = N'${MaGV}'`;
-        let result_XT = await TruyVan("Admin", SQLQuery_XT);
-        console.log("Xóa giáo viên", result_XT);
-        return result;
-    } catch(err) {
-        console.log(err);
-        return ({ 
-            statusCode: 400,
-            message: 'Lỗi truy vấn SQL!',
-            alert: 'Kiểm tra lại câu lệnh SQL!'
-        });
-    }
-}
-
-async function XoaLopHoc(MaLop) {
-    try {
-
-        let SQLQuery = `delete from LOP where MaLop = N'${MaLop}'`;
-        let result = await TruyVan("Admin", SQLQuery);
-        console.log("Xóa lớp học", result);
-        return result;
-    } catch(err) {
-        console.log(err);
-        return ({ 
-            statusCode: 400,
-            message: 'Lỗi truy vấn SQL!',
-            alert: 'Kiểm tra lại câu lệnh SQL!'
-        });
-    }
-}
-
-exports.XoaLopHoc = XoaLopHoc;
-exports.XoaGiaoVien = XoaGiaoVien;
-exports.XoaHocSinh = XoaHocSinh;
 exports.ThemGiaoVienVaoLop = ThemGiaoVienVaoLop;
 exports.ThemHocSinhVaoLop = ThemHocSinhVaoLop;
 exports.DanhSachHocSinh = DanhSachHocSinh;

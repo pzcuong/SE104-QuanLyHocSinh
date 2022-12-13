@@ -521,66 +521,6 @@ async function XoaBaiDang(req, res) {
             });
 }
 
-async function XoaHocSinh(req, res) {
-    const result = await adminModel.XoaHocSinh(req.body.MaHS);
-    if(result.statusCode === 200)
-        return res
-            .status(200)
-            .send({
-                statusCode: 200,
-                message: 'Xóa học sinh thành công',
-                data: result.result
-            });
-    else
-        return res
-            .status(400)
-            .send({
-                statusCode: 400,
-                message: 'Xóa học sinh không thành công',
-            });
-}
-
-async function XoaGiaoVien(req, res) {
-    const result = await adminModel.XoaGiaoVien(req.body.MaGV);
-    if(result.statusCode === 200)
-        return res
-            .status(200)
-            .send({
-                statusCode: 200,
-                message: 'Xóa giáo viên thành công',
-                data: result.result
-            });
-    else
-        return res
-            .status(400)
-            .send({
-                statusCode: 400,
-                message: 'Xóa giáo viên không thành công',
-            });
-}
-
-async function XoaLopHoc(req, res) {
-    const result = await adminModel.XoaLopHoc(req.body.MaLop);
-    if(result.statusCode === 200)
-        return res
-            .status(200)
-            .send({
-                statusCode: 200,
-                message: 'Xóa lớp học thành công',
-                data: result.result
-            });
-    else
-        return res
-            .status(400)
-            .send({
-                statusCode: 400,
-                message: 'Xóa lớp học không thành công',
-            });
-}
-
-exports.XoaLopHoc = XoaLopHoc;
-exports.XoaGiaoVien = XoaGiaoVien;
-exports.XoaHocSinh = XoaHocSinh;
 exports.XemThongTinLop = XemThongTinLop;
 exports.ThemGiaoVienVaoLop = ThemGiaoVienVaoLop;
 exports.ThemHocSinhVaoLop = ThemHocSinhVaoLop;

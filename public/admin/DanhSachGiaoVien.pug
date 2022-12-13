@@ -171,7 +171,7 @@ html(lang='en')
                   .card-body_header
                     if(role == 'Admin')
                       .card-body_header-icon
-                        a.btn(href='/admin/ThemTaiKhoan/')
+                        a.btn(href='./edit-student.html')
                           i.fa-solid.fa-plus
                 .card-body_body
                   .Data-Table
@@ -213,8 +213,7 @@ html(lang='en')
                                 if(role == 'Admin')
                                   td.text-end
                                     .action
-                                      - var functionName_1 = "XoaGiaoVien('" + user.MaGV + "')"
-                                      a.delete-btn(href='#',onclick=functionName_1)
+                                      a.delete-btn(href='#')
                                           i.fa-solid.fa-trash
                                       - var functionName = 'LayThongTin(' + user.MaGV + ')';
                                       a.edit-btn.js-edit-student(href='#', onclick=functionName)
@@ -296,4 +295,3 @@ html(lang='en')
     script(src='/public/source/js/main.js')
     script(src='/public/source/js/edit-student.js ')
     script(src='/public/source/js/teachers.js ')
-    script(src='/public/source/js/edit-teacher.js ')

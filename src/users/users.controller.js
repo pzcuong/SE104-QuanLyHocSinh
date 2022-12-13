@@ -104,7 +104,7 @@ async function NhapDiem(req, res) {
         return res.json({
             statusCode: 500,
             message: 'Nhập điểm thất bại',
-            result: result.result.recordsets[0]
+            // result: result.result.recordsets[0]
         });
     }
 }
@@ -149,9 +149,7 @@ async function DanhSachDiem (req, res) {
 
     let kq = [];
     let index = 0;
-    for (let i = 0, j = 0; i < result.result.length; i++) {
-        console.log(result.result[i].MaHS)
-        
+    for (let i = 0, j = 0; i < result.result.length; i++) {        
         // if( || kq[index].MaHS != result.result[i].MaHS)
         try {
             if(kq[index-1].MaHS != result.result[i].MaHS) 
@@ -163,6 +161,7 @@ async function DanhSachDiem (req, res) {
                     KT1T: '',
                     KTGK: '',
                     KTCK: '',
+                    DiemTB: result.result[i].DiemTBMon,
                 }
         } catch (error) {
             kq[index++] = {
@@ -173,6 +172,7 @@ async function DanhSachDiem (req, res) {
                 KT1T: '',
                 KTGK: '',
                 KTCK: '',
+                DiemTB: result.result[i].DiemTBMon,
             }
         }
         
@@ -192,6 +192,7 @@ async function DanhSachDiem (req, res) {
 
     //     });
     // console.log(results)
+    // console.log(kq)
     return res.json({
         statusCode: 200,
         message: 'Lấy danh sách học sinh trong lớp và điểm thành công',
@@ -227,4 +228,24 @@ async function DanhSachHocSinhTheoMaHS(req, res) {
     }
 }
 
+async function TinhDiemTrungBinh(req, res) {
+    let MaLop = req.params.MaLop;
+    let result = await usersModel.TinhDiemTrungBinh(MaLop);
+    console.log("Tinh diem trung binh")
+    console.log(result.result)
+    if(result.statusCode === 200) {
+        return res.json({
+            statusCode: 200,
+            message: 'Tính điểm trung bình thành công',
+            result: result.result
+        });
+    } else {
+        return res.json({
+            statusCode: 500,
+            message: 'Tính điểm trung bình thất bại',
+        })
+    }
+}
+
 exports.DanhSachHocSinhTheoMaHS = DanhSachHocSinhTheoMaHS;
+exports.TinhDiemTrungBinh = TinhDiemTrungBinh;

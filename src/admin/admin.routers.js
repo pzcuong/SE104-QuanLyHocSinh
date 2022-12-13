@@ -83,13 +83,4 @@ router.route('/DanhSachLopHoc')
 	.get(isAuthAdmin, adminController.XemDanhSachLop)
 	.post(isAuthAdmin, adminController.XemThongTinLop);
 
-router.route('/XoaHocSinh')
-	.post(isAuthAdmin,adminController.XoaHocSinh)
-
-router.route('/XoaLopHoc')
-	.post(isAuthAdmin,adminController.XoaLopHoc)
-
-router.route('/XoaGiaoVien')
-	.post(isAuthAdmin,adminController.XoaGiaoVien)
-
 module.exports = router;

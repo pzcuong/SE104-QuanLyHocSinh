@@ -101,32 +101,24 @@ async function createUser(data, role) {
         if (data.DiaChi == undefined) data.DiaChi = 'NULL';
 
         if (role == 'HocSinh') {
-            SQLQuery_1 = `set dateformat ymd; insert into HOCSINH (MaHS, HoTen, GioiTinh, NgSinh, DiaChi, Email) 
-                values (N'${data.MaND}', N'${data.HoTen}', N'${data.GioiTinh}', '${data.NgSinh}', N'${data.DiaChi}', N'${data.Email}')`;
+            SQLQuery_1 = `insert into HOCSINH (MaHS, HoTen, GioiTinh, NgSinh, DiaChi, Email) 
+                values (N'${data.MaND}', N'${data.HoTen}', N'${data.GioiTinh}', N'${data.NgSinh}', N'${data.DiaChi}', N'${data.Email}')`;
         };
 
         if (role == 'GiaoVien' || role == 'Admin') {
-            SQLQuery_1 = `set dateformat ymd; insert into GIAOVIEN (MaGV, HoTen, GioiTinh, NgSinh, DiaChi, Email) 
-                values (N'${data.MaND}', N'${data.HoTen}', N'${data.GioiTinh}', '${data.NgSinh}', N'${data.DiaChi}', N'${data.Email}')`;
+            SQLQuery_1 = `insert into GIAOVIEN (MaGV HoTen, GioiTinh, NgSinh, DiaChi, Email) 
+                values (N'${data.MaND}', N'${data.HoTen}', N'${data.GioiTinh}', N'${data.NgSinh}', N'${data.DiaChi}', N'${data.Email}')`;
         }
 
+        let result = await TruyVan("Admin", SQLQuery);
         let result_1 = await TruyVan("Admin", SQLQuery_1);
-        if(result_1.statusCode == 200) {
-            let result = await TruyVan("Admin", SQLQuery);    
-            
-            return ({
-                statusCode: 200,
-                message: 'Thành công',
-                result: result.result.rowsAffected[0]
-            })
-        } else {
-            return ({
-                statusCode: 500,
-                message: 'Kiểm tra lại thông tin người dùng!',
-                alert: 'Kiểm tra lại thông tin người dùng!'
-            });
-        }
-        
+        console.log(result_1);
+
+        return ({
+            statusCode: 200,
+            message: 'Thành công',
+            result: result.result.rowsAffected[0]
+        })
     }
     catch (err) {
         console.log("Lỗi createUser (users.models)", err);
@@ -233,10 +225,10 @@ async function updateUser(data) {
     try {
         let SQLQuery;
         if (data.role == "GiaoVien") {
-            SQLQuery = `set dateformat dmy; update GIAOVIEN set HoTen = N'${data.hoten}',NgSinh = N'${data.ngsinh}',GioiTinh = N'${data.gioitinh}',DiaChi = N'${data.diachi}',Email = N'${data.email}' where MaGV = N'${data.MaND}'`;
+            SQLQuery = `update GIAOVIEN set HoTen = N'${data.hoten}',NgSinh = N'${data.ngsinh}',GioiTinh = N'${data.gioitinh}',DiaChi = N'${data.diachi}',Email = N'${data.email}' where MaGV = N'${data.MaND}'`;
         }
         if (data.role == "HocSinh") {
-            SQLQuery = `set dateformat dmy;; update HOCSINH set HoTen = N'${data.hoten}',NgSinh = N'${data.ngsinh}',GioiTinh = N'${data.gioitinh}',DiaChi = N'${data.diachi}',Email = N'${data.email}' where MaHS = N'${data.MaND}'`;
+            SQLQuery = `update HOCSINH set HoTen = N'${data.hoten}',NgSinh = N'${data.ngsinh}',GioiTinh = N'${data.gioitinh}',DiaChi = N'${data.diachi}',Email = N'${data.email}' where MaHS = N'${data.MaND}'`;
         }
         console.log(SQLQuery)
         let result = await TruyVan("Admin", SQLQuery);
@@ -420,10 +412,18 @@ async function NhapDiem(MaMH, data) {
                         let MaLHKT = Object.keys(data[i])[j];
                         let Diem = Object.values(data[i])[j];
 
+                        if(MaLHKT == "DiemTB") continue;
+
                         let SQLQuery = `UPDATE CT_HOCMON SET
                             Diem = '${Diem}'
                             WHERE MaQTHoc = '${CheckHS.result.recordset[0].MaQTHoc}' AND MaLHKT = '${MaLHKT}'`;
                         let result = await TruyVan("Admin", SQLQuery); 
+
+                        if(result.statusCode != 200) 
+                            return ({
+                                statusCode: 400,
+                                message: 'Điểm không hợp lệ!',
+                            })
                         // console.log("Danh sách kết quả học môn", result);
                     // }
                 } else {    
@@ -432,12 +432,20 @@ async function NhapDiem(MaMH, data) {
                     for(let j = 2; j < Object.keys(data[i]).length; j++){
                         let MaLHKT = Object.keys(data[i])[j];
                         let Diem = Object.values(data[i])[j];
+
+                        if(MaLHKT == "DiemTB") continue;
     
                         let SQLQuery = `INSERT CT_HOCMON(MaQTHoc, MaLHKT, Diem) VaLUES (
                             '${CheckHS.result.recordset[0].MaQTHoc}',
                             '${MaLHKT}',
                             '${Diem}')`;
                         let result = await TruyVan("Admin", SQLQuery);
+
+                        if(result.statusCode != 200) 
+                            return ({
+                                statusCode: 400,
+                                message: 'Điểm không hợp lệ!',
+                            })
                     }
                 }
 
@@ -464,36 +472,11 @@ exports.NhapDiem = NhapDiem;
 
 async function DanhSachDiem(MaMH, MaLop, HocKy, Nam2) {
     try {
-        let SQLQuery = `SELECT HS.MaHS, HoTen, MaLHKT, Diem, MaLop FROM HOCSINH HS, 
-            (SELECT KQHM.MaHS, MaLHKT, Diem, L.MaLop
+        let SQLQuery = `SELECT HS.MaHS, HoTen, MaLHKT, Diem, BD.DiemTBMon, MaLop FROM HOCSINH HS, 
+            (SELECT KQHM.MaHS, MaLHKT, Diem, KQHM.DiemTBMon, L.MaLop
             FROM KETQUAHOCMON KQHM LEFT JOIN CT_HOCMON CTHM ON KQHM.MaQTHoc = CTHM.MaQTHoc INNER JOIN HOCSINH_LOP HS_L ON HS_L.MaHS = KQHM.MaHS INNER JOIN LOP L ON L.MaLop = HS_L.MaLop INNER JOIN HOCKY HK ON HK.MaHocKy = L.MaHocKy
             WHERE MaMH = '${MaMH}'AND L.MaLop = N'${MaLop}' AND HK.HocKy = N'${HocKy}' AND HK.MaNam = N'NH${Nam2}'
-            GROUP BY KQHM.MaHS, MaLHKT, Diem, L.MaLop) BD
-        WHERE HS.MaHS = BD.MaHS`;
-        let result = await TruyVan("Admin", SQLQuery);
-        console.log("Danh sách các điểm", result);
-        return ({
-            statusCode: 200,
-            message: 'Lấy danh sách điểm thành công!',
-            result: result.result.recordset
-        });
-    } catch (err) {
-        console.log(err);
-        return ({
-            statusCode: 400,
-            message: 'Lỗi truy vấn SQL!',
-            alert: 'Kiểm tra lại câu lệnh SQL!'
-        });
-    }
-}
-
-async function DanhSachHocSinh_Admin( MaLop, HocKy, Nam2) {
-    try {
-        let SQLQuery = `SELECT HS.MaHS, HoTen, MaLHKT, Diem, MaLop FROM HOCSINH HS, 
-            (SELECT KQHM.MaHS, MaLHKT, Diem, L.MaLop
-            FROM KETQUAHOCMON KQHM LEFT JOIN CT_HOCMON CTHM ON KQHM.MaQTHoc = CTHM.MaQTHoc INNER JOIN HOCSINH_LOP HS_L ON HS_L.MaHS = KQHM.MaHS INNER JOIN LOP L ON L.MaLop = HS_L.MaLop INNER JOIN HOCKY HK ON HK.MaHocKy = L.MaHocKy
-            WHERE L.MaLop = N'${MaLop}' AND HK.HocKy = N'${HocKy}' AND HK.MaNam = N'NH${Nam2}'
-            GROUP BY KQHM.MaLop, MaLHKT, Diem, L.MaLop) BD
+            GROUP BY KQHM.MaHS, MaLHKT, Diem, L.MaLop, KQHM.DiemTBMon) BD
         WHERE HS.MaHS = BD.MaHS`;
         let result = await TruyVan("Admin", SQLQuery);
         console.log("Danh sách các điểm", result);
@@ -583,6 +566,22 @@ async function DanhSachHocSinhTheoMaHS(MaHS) {
     }
 }
 
+async function TinhDiemTrungBinh(MaLop) {
+    let SQLQuery = `SELECT MaLop, KETQUAHOCMON.MaMH, MaHS, [dbo].TINH_DIEMTB(CT_HOCMON.MaQTHoc) AS DiemTB
+        FROM dbo.CT_HOCMON INNER JOIN dbo.KETQUAHOCMON ON KETQUAHOCMON.MaQTHoc = CT_HOCMON.MaQTHoc INNER JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaMH = KETQUAHOCMON.MaMH
+        WHERE MaLop = '${MaLop}'
+        GROUP BY CT_HOCMON.MaQTHoc, MaLop, KETQUAHOCMON.MaMH, MaHS
+    `
+    let result = await TruyVan("Admin", SQLQuery);
+    console.log("Thông tin trung bình lớp", result);
+    if(result.statusCode != 200) return result;
+    return ({
+        statusCode: 200,
+        message: 'Lấy thông tin trung bình lớp thành công!',
+        result: result.result.recordset
+    });
+}
+
 exports.DanhSachHocSinhTheoMaHS = DanhSachHocSinhTheoMaHS;
 exports.DanhSachDiem = DanhSachDiem;
 exports.DanhSachMHDoGVDay = DanhSachMHDoGVDay;
@@ -602,3 +601,4 @@ exports.NhapDiem = NhapDiem;
 exports.DanhSachBaiDang = DanhSachBaiDang;
 exports.NoiDungBaiDang = NoiDungBaiDang;
 exports.XemThongTinLop = XemThongTinLop;
+exports.TinhDiemTrungBinh = TinhDiemTrungBinh;
