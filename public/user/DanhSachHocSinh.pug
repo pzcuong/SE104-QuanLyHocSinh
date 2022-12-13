@@ -1,0 +1,223 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(http-equiv='X-UA-Compatible' content='IE=edge')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    link(rel='stylesheet' href='/public/source/css/students.css  ')
+    link(rel='stylesheet' href='/public/source/css/edit-student.css ')
+    link(rel='stylesheet' href='/public/source/fonts/fontawesome-free-6.2.0-web/css/all.css')
+    link(rel='icon' type='image/x-icon' href='/public/source/img/favicon.png')
+    link(rel='stylesheet' href='/public/source/css/style.css')
+    script(src='/public/source/js/script.js')
+    script(src='https://kit.fontawesome.com/7b85820244.js' crossorigin='anonymous')
+    title CoCoEdu
+  body#body-wrapper
+    - var role = role
+    - var role_encode;
+      if (role == 'Admin')
+        - role_encode = "Administator"
+      if (role == 'GiaoVien')
+        - role_encode = "Giáo Viên"
+      if (role == "HocSinh")
+        - role_encode = "Học Sinh"
+
+    .header
+      .actions_user_hd
+        #profile.profile_hd(onclick='menuhdToggle()')
+          img(src='/public/source/img/user_none1.png' alt='image user')
+        .menu_user_hd
+          .profile_name #{user.HoTen}
+            br
+            span #{role_encode}
+          ul
+            li
+              a(href='/user/profile/') Hồ Sơ
+            li
+              a(onclick="DangXuat()") Đăng Xuất
+      form.search-bar
+        input.searchTerm(type='text' placeholder='Tìm kiếm tại đây')
+        button.searchButton(type='submit')
+          i.fa-solid.fa-magnifying-glass
+    // Tên app,logo app+
+    // 
+    // Mới sửa
+    .sidebar
+      .logo-details
+        img(src='/public/source/img/preskool.png' alt='logo')
+        a(href='/user/profile/')
+          span.logo_name CoCoEdu
+      // Mới sửa
+      .nav_links
+        .sidenav
+          // Bảng điều khiển
+          div
+            button.dropdown-btn
+              i#icon_sn.fa-solid.fa-border-all
+              span.link_name Bảng điều khiển
+              i#drop.fas.fa-angle-right
+            .dropdown-container
+              a.link_name(href='#') Bảng điều khiển
+              if (role == 'Admin')
+                .nbar-sub
+                  a(href='/admin/Dashboard/') Administrator
+              if (role == 'GiaoVien')
+                .nbar-sub
+                  a(href='/user/DashboardGiaoVien/') Giáo Viên
+              if (role == 'HocSinh')
+                .nbar-sub
+                  a(href='/user/DashboardHocSinh/') Học Sinh
+          // SInh viên
+          if(role == 'Admin' || role == 'HocSinh')
+            div
+              button.dropdown-btn
+                i#icon_sn.fa-solid.fa-graduation-cap
+                span.link_name Học Sinh
+                i#drop.fas.fa-angle-right
+              .dropdown-container
+                a.link_name(href='#') Học Sinh
+                  if (role == "HocSinh")
+                    .nbar-sub
+                      a(href='/user/DanhSachHocSinh') Danh Sách Học Sinh
+                  if (role == "Admin")
+                    .nbar-sub
+                      a(href='/admin/DanhSachHocSinh') Danh Sách Học Sinh
+                  if (role == "Admin")
+                    .nbar-sub
+                      a(href='/admin/ThemTaiKhoan') Thêm Học Sinh
+          if(role == 'Admin' || role == 'GiaoVien')
+            div
+              button.dropdown-btn
+                i#icon_sn.fa-solid.fa-book-open
+                span.link_name Lớp
+                i#drop.fas.fa-angle-right
+              .dropdown-container
+                a.link_name(href='#') Lớp
+                
+                if(role == 'GiaoVien')
+                  .nbar-sub
+                    a(href='/user/DanhSachLopHoc') Danh Sách Lớp
+                if( role == 'Admin')
+                  .nbar-sub
+                    a(href='/admin/DanhSachLopHoc') Danh Sách Lớp
+                  .nbar-sub
+                    a(href='/admin/ThemLopHoc') Thêm Lớp
+          // Giáo Viên
+          if(role == 'Admin' || role == 'GiaoVien')
+            div
+              button.dropdown-btn
+                i#icon_sn.fa-solid.fa-chalkboard-user
+                span.link_name Giáo Viên
+                i#drop.fas.fa-angle-right
+              .dropdown-container
+                a.link_name(href='#') Giáo Viên
+                if (role =="GiaoVien")
+                  .nbar-sub
+                    a(href='/user/DanhSachGiaoVien') Danh Sách Giáo Viên
+                if (role == "Admin")
+                  .nbar-sub
+                    a(href='/admin/DanhSachGiaoVien') Danh Sách Giáo Viên
+                  .nbar-sub
+                    a(href='/admin/ThemTaiKhoan') Thêm Giáo Viên
+            // Bảng điểm
+            
+            if( role == "GiaoVien")
+              div
+                button.dropdown-btn
+                  i#icon_sn.fa-regular.fa-calendar
+                  span.link_name Bảng điểm
+                  i#drop.fas.fa-angle-right
+                .dropdown-container
+                  a.link_name(href='#') Bảng điểm
+                  .nbar-sub
+                    a(href='#') Xem bảng điểm
+                    // Mới sửa
+                  .nbar-sub
+                    a(href='/user/NhapDiem/TN101/') Nhập bảng điểm
+                  // Mới sửa
+                // Mới sửa
+            
+          div
+            button.dropdown-btn
+              i#icon_sn.fa-solid.fa-pen
+              span.link_name Thông báo
+              i#drop.fas.fa-angle-right
+            .dropdown-container
+              a.link_name(href='#') Thông báo
+              .nbar-sub
+                a(href='/user/XemThongBao') Xem Thông báo
+              
+              if (role == "Admin")
+                .nbar-sub
+                  a(href='/admin/DanhSachBaiDang') Danh Sách Thông báo
+                .nbar-sub
+                  a(href='/admin/ThemBaiDang') Tạo Thông báo
+        // Mới sửa
+        
+
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              h3.page-title Danh sách Học Sinh
+        // Start: Search Bar
+        .student-form
+          .card
+            .card-table
+              .card-body
+
+                .card-body_body
+                  .Data-Table
+                    .Data-Table-body
+                      .Table-body 
+                        if (ClassDataList.length == 0)
+                            h2 Không có dữ liệu
+                        else
+                            table.Table
+                              thead.student-thead
+                                tr.thead(role='row')
+                                th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='MaSo')
+                                    | Mã Số
+                                th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='HoTen')
+                                    | Họ Tên
+                                th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='Lop')
+                                    | Lớp
+                                th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='GioiTinh')
+                                    | Giới Tính
+                                th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='NgaySinh')
+                                    | Ngày Sinh
+                                th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='SoDienThoai')
+                                    | Số Điện Thoại
+                                th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='Email')
+                                    | Email
+                                th.sorting.address(tabindex='0' rowspan='1' colspan='1' aria-label='DiaChi')
+                                    | Địa Chỉ
+
+                              tbody.student-tbody
+                                if (Object.keys(ClassDataList).length == 0)
+                                    h2 Không có dữ liệu
+                                else
+                                    each user in ClassDataList
+                                        - var date = new Date(user.NgSinh).toLocaleDateString();
+                                        
+                                        tr.odd.table-normal(role='row', id=user.MaHS)
+                                            td #{user.MaHS[0]}
+                                            td
+                                                a(href='./view-student.html') #{user.HoTen}
+                                            td #{user.MaLop}
+                                            td #{user.GioiTinh}
+                                            td #{date}
+                                            td +84756126896
+                                            td #{user.Email}
+                                            td #{user.DiaChi}
+
+
+                    .Data-Table-footer
+
+    script(src='/public/source/js/main.js')
+    script(src='/public/source/js/edit-student.js ')
+    script(src='/public/source/js/students.js ')
