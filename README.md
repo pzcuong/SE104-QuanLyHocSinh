@@ -1,4 +1,4 @@
-# IE104.N13.CNCL - Nhóm 01
+# SE104.N11.KHCL- Nhóm 2
 #### [](https://github.com/pzcuong/QuanLyHocSinh/tree/master#ph%E1%BA%A7n-m%E1%BB%81m-qu%E1%BA%A3n-l%C3%BD-h%E1%BB%8Dc-sinh)*Phần mềm: Quản lý học sinh
 [![Build Status](https://camo.githubusercontent.com/c29bc856325cd819f5a3bb6536b7982f04a161e656de066c4c970e0079c14ff5/68747470733a2f2f7472617669732d63692e6f72672f6a6f656d6363616e6e2f64696c6c696e6765722e7376673f6272616e63683d6d6173746572)](https://travis-ci.org/joemccann/dillinger)
 
