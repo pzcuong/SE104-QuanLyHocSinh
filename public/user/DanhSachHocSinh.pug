@@ -152,9 +152,30 @@ html(lang='en')
                   a(href='/admin/DanhSachBaiDang') Danh Sách Thông báo
                 .nbar-sub
                   a(href='/admin/ThemBaiDang') Tạo Thông báo
-        // Mới sửa
-        
-
+          // Quy Định
+          if (role == "Admin")
+            div
+                button.dropdown-btn
+                  i#icon_sn.fa-solid.fa-pen-ruler
+                  span.link_name Quy Định
+                  i#drop.fas.fa-angle-right
+                .dropdown-container
+                  a.link_name(href='#') Quy Định
+                  .nbar-sub
+                    a(href='/admin/QuyDinh') Chỉnh Sửa Quy Định
+            // Báo Cáo
+          if (role == "Admin" || role == "GiaoVien")
+            div
+                button.dropdown-btn
+                  i#icon_sn.fa-solid.fa-file-invoice
+                  span.link_name Báo Cáo
+                  i#drop.fas.fa-angle-right
+                .dropdown-container
+                  a.link_name(href='#') Báo Cáo
+                  .nbar-sub
+                    a(href='#') Báo Cáo Tổng Kết Môn
+                  .nbar-sub
+                    a(href='#') Báo Cáo Tổng Kết Học Kỳ
     section.home-section
       .home-content
         i.fa-solid.fa-bars
@@ -207,7 +228,7 @@ html(lang='en')
                                         tr.odd.table-normal(role='row', id=user.MaHS)
                                             td #{user.MaHS[0]}
                                             td
-                                                a(href='./view-student.html') #{user.HoTen}
+                                                a(href='#') #{user.HoTen}
                                             td #{user.MaLop}
                                             td #{user.GioiTinh}
                                             td #{date}

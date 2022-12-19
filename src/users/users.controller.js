@@ -247,5 +247,78 @@ async function TinhDiemTrungBinh(req, res) {
     }
 }
 
+async function DanhSachLopHocTheoGV(req, res) {
+    console.log(req.user.result)
+    let result = await usersModel.DanhSachLopHocTheoGV(req.user.result.MaGV);
+    console.log("Danh sach lop hoc")
+    console.log(result.result)
+    if(result.statusCode === 200) {
+        let html = pug.renderFile('public/user/DanhSachLopHoc.pug',{
+            ClassDataList:  result.result,
+            user: {
+                HoTen: req.user.result.HoTen,
+            }, role: req.user.role
+        });
+        res.send(html);
+    } else {
+        return res.json({
+            statusCode: 500,
+            message: 'Lấy danh sách lớp học thất bại',
+        })
+    }
+}
+
 exports.DanhSachHocSinhTheoMaHS = DanhSachHocSinhTheoMaHS;
 exports.TinhDiemTrungBinh = TinhDiemTrungBinh;
+exports.DanhSachLopHocTheoGV = DanhSachLopHocTheoGV;
+
+
+async function BaoCaoHocKy(req, res) {
+    console.log(req.user.result)
+    let MaGV = req.user.result.MaGV;
+    if(!MaGV) 
+        MaGV = "20521150"
+    
+    let result = await usersModel.DanhSachHocSinhTheoMaHS("MaHS");
+    console.log("Danh sach báo cáo theo ma gv")
+    console.log(result.result)
+    if(result.statusCode === 200) {
+        let html = pug.renderFile('public/user/BaoCaoTBHK.pug',{
+            ClassDataList:  result.result,
+            user: {
+                HoTen: req.user.result.HoTen,
+            }, role: req.user.role
+        });
+        res.send(html);
+    } else {
+        return res.json({
+            statusCode: 500,
+            message: 'Lấy danh sách báo cáo theo MaGV thất bại',
+        })
+    }
+}
+
+async function DanhSachHocSinhTrongLopTheoMaLop(req, res) {
+    req.MaLop = req.params.MaLop;
+
+    let result = await usersModel.DanhSachHocSinhTrongLopTheoMaLop(req.MaLop);
+    console.log(result.result.recordsets)
+    if(result.statusCode === 200) {
+        let html = pug.renderFile('public/user/DanhSachHocSinhTrongLop.pug',{
+            ClassDataList:  result.result.recordset,
+            user: {
+                HoTen: req.user.result.HoTen,
+            }, role: req.user.role
+        });
+        res.send(html);
+    } else {
+        let html = pug.renderFile('public/404.pug', { 
+            message: result.message,
+            redirect: 'public/Home.pug'
+        });
+        res.send(html);
+    }
+}
+
+exports.BaoCaoHocKy = BaoCaoHocKy;
+exports.DanhSachHocSinhTrongLopTheoMaLop = DanhSachHocSinhTrongLopTheoMaLop;

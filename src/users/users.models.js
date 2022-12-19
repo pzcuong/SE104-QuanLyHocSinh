@@ -101,24 +101,32 @@ async function createUser(data, role) {
         if (data.DiaChi == undefined) data.DiaChi = 'NULL';
 
         if (role == 'HocSinh') {
-            SQLQuery_1 = `insert into HOCSINH (MaHS, HoTen, GioiTinh, NgSinh, DiaChi, Email) 
-                values (N'${data.MaND}', N'${data.HoTen}', N'${data.GioiTinh}', N'${data.NgSinh}', N'${data.DiaChi}', N'${data.Email}')`;
+                SQLQuery_1 = `set dateformat ymd; insert into HOCSINH (MaHS, HoTen, GioiTinh, NgSinh, DiaChi, Email) 
+                values (N'${data.MaND}', N'${data.HoTen}', N'${data.GioiTinh}', '${data.NgSinh}', N'${data.DiaChi}', N'${data.Email}')`;
         };
 
         if (role == 'GiaoVien' || role == 'Admin') {
-            SQLQuery_1 = `insert into GIAOVIEN (MaGV HoTen, GioiTinh, NgSinh, DiaChi, Email) 
-                values (N'${data.MaND}', N'${data.HoTen}', N'${data.GioiTinh}', N'${data.NgSinh}', N'${data.DiaChi}', N'${data.Email}')`;
+            SQLQuery_1 = `set dateformat ymd; insert into GIAOVIEN (MaGV, HoTen, GioiTinh, NgSinh, DiaChi, Email) 
+                values (N'${data.MaND}', N'${data.HoTen}', N'${data.GioiTinh}', '${data.NgSinh}', N'${data.DiaChi}', N'${data.Email}')`;
         }
 
-        let result = await TruyVan("Admin", SQLQuery);
         let result_1 = await TruyVan("Admin", SQLQuery_1);
-        console.log(result_1);
+        if(result_1.statusCode == 200) {
+            let result = await TruyVan("Admin", SQLQuery);    
 
-        return ({
-            statusCode: 200,
-            message: 'Thành công',
-            result: result.result.rowsAffected[0]
-        })
+            return ({
+                statusCode: 200,
+                message: 'Thành công',
+                result: result.result.rowsAffected[0]
+            })
+        } else {
+            return ({
+                statusCode: 500,
+                message: 'Kiểm tra lại thông tin người dùng!',
+                alert: 'Kiểm tra lại thông tin người dùng!'
+            });
+        }
+
     }
     catch (err) {
         console.log("Lỗi createUser (users.models)", err);
@@ -225,10 +233,10 @@ async function updateUser(data) {
     try {
         let SQLQuery;
         if (data.role == "GiaoVien") {
-            SQLQuery = `update GIAOVIEN set HoTen = N'${data.hoten}',NgSinh = N'${data.ngsinh}',GioiTinh = N'${data.gioitinh}',DiaChi = N'${data.diachi}',Email = N'${data.email}' where MaGV = N'${data.MaND}'`;
+            SQLQuery = `set dateformat dmy; update GIAOVIEN set HoTen = N'${data.hoten}',NgSinh = N'${data.ngsinh}',GioiTinh = N'${data.gioitinh}',DiaChi = N'${data.diachi}',Email = N'${data.email}' where MaGV = N'${data.MaND}'`;
         }
         if (data.role == "HocSinh") {
-            SQLQuery = `update HOCSINH set HoTen = N'${data.hoten}',NgSinh = N'${data.ngsinh}',GioiTinh = N'${data.gioitinh}',DiaChi = N'${data.diachi}',Email = N'${data.email}' where MaHS = N'${data.MaND}'`;
+            SQLQuery = `set dateformat dmy; update HOCSINH set HoTen = N'${data.hoten}',NgSinh = N'${data.ngsinh}',GioiTinh = N'${data.gioitinh}',DiaChi = N'${data.diachi}',Email = N'${data.email}' where MaHS = N'${data.MaND}'`;
         }
         console.log(SQLQuery)
         let result = await TruyVan("Admin", SQLQuery);
@@ -309,7 +317,7 @@ async function getAllClass() {
 
 async function DanhSachBaiDang() {
     try {
-        let SQLQuery = `SELECT * FROM BAIDANG`;
+        let SQLQuery = `SELECT * FROM BAIDANG ORDER BY MaBaiDang DESC`;
         let result = await TruyVan("Admin", SQLQuery);
         console.log("Danh sách các bài đăng", result);
         return result;
@@ -410,6 +418,14 @@ async function NhapDiem(MaMH, data) {
 
                     // for(let j = 2; j < Object.keys(data[i]).length; j++){
                         let MaLHKT = Object.keys(data[i])[j];
+
+                        if(Object.values(data[i])[j] == '') {
+                            let SQLQuery = `DELETE CT_HOCMON WHERE MaQTHoc = '${CheckHS.result.recordset[0].MaQTHoc}' AND MaLHKT = '${MaLHKT}'`;
+                            let result = await TruyVan("Admin", SQLQuery);
+                            // console.log("Danh sách kết quả học môn", result);
+                            continue;
+                        }
+
                         let Diem = Object.values(data[i])[j];
 
                         if(MaLHKT == "DiemTB") continue;
@@ -430,6 +446,7 @@ async function NhapDiem(MaMH, data) {
                     if(Object.keys(data[i]).length == 2) continue;
     
                     for(let j = 2; j < Object.keys(data[i]).length; j++){
+                        if(Object.values(data[i])[j] == '') continue;
                         let MaLHKT = Object.keys(data[i])[j];
                         let Diem = Object.values(data[i])[j];
 
@@ -472,12 +489,19 @@ exports.NhapDiem = NhapDiem;
 
 async function DanhSachDiem(MaMH, MaLop, HocKy, Nam2) {
     try {
-        let SQLQuery = `SELECT HS.MaHS, HoTen, MaLHKT, Diem, BD.DiemTBMon, MaLop FROM HOCSINH HS, 
-            (SELECT KQHM.MaHS, MaLHKT, Diem, KQHM.DiemTBMon, L.MaLop
-            FROM KETQUAHOCMON KQHM LEFT JOIN CT_HOCMON CTHM ON KQHM.MaQTHoc = CTHM.MaQTHoc INNER JOIN HOCSINH_LOP HS_L ON HS_L.MaHS = KQHM.MaHS INNER JOIN LOP L ON L.MaLop = HS_L.MaLop INNER JOIN HOCKY HK ON HK.MaHocKy = L.MaHocKy
-            WHERE MaMH = '${MaMH}'AND L.MaLop = N'${MaLop}' AND HK.HocKy = N'${HocKy}' AND HK.MaNam = N'NH${Nam2}'
-            GROUP BY KQHM.MaHS, MaLHKT, Diem, L.MaLop, KQHM.DiemTBMon) BD
-        WHERE HS.MaHS = BD.MaHS`;
+        // let SQLQuery = `SELECT HS.MaHS, HoTen, MaLHKT, Diem, BD.DiemTBMon, MaLop FROM HOCSINH HS, 
+        //     (SELECT KQHM.MaHS, MaLHKT, Diem, KQHM.DiemTBMon, L.MaLop
+        //     FROM KETQUAHOCMON KQHM FULL JOIN CT_HOCMON CTHM ON KQHM.MaQTHoc = CTHM.MaQTHoc FULL JOIN HOCSINH_LOP HS_L ON HS_L.MaHS = KQHM.MaHS FULL JOIN LOP L ON L.MaLop = HS_L.MaLop FULL JOIN HOCKY HK ON HK.MaHocKy = L.MaHocKy
+        //     WHERE MaMH = '${MaMH}'AND L.MaLop = N'${MaLop}' AND HK.HocKy = N'${HocKy}' AND HK.MaNam = N'NH${Nam2}'
+        //     GROUP BY KQHM.MaHS, MaLHKT, Diem, L.MaLop, KQHM.DiemTBMon) BD
+        // WHERE HS.MaHS = BD.MaHS`;
+        let SQLQuery = `	
+            SELECT DISTINCT HOCSINH.MaHS, HoTen, KQHM.MaLHKT, KQHM.Diem, KQHM.DiemTBMon, LOP.MaLop, TenLop FROM (
+                SELECT MaHS, MaLHKT, Diem, DiemTBMon
+                FROM dbo.KETQUAHOCMON INNER JOIN dbo.CT_HOCMON ON CT_HOCMON.MaQTHoc = KETQUAHOCMON.MaQTHoc
+                WHERE MaMH = '${MaMH}'
+                ) KQHM RIGHT JOIN dbo.HOCSINH ON HOCSINH.MaHS = KQHM.MaHS INNER JOIN dbo.HOCSINH_LOP ON HOCSINH_LOP.MaHS = HOCSINH.MaHS INNER JOIN dbo.LOP ON LOP.MaLop = HOCSINH_LOP.MaLop INNER JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaLop = LOP.MaLop
+            WHERE MaMH = '${MaMH}' AND LOP.MaLop = '${MaLop}'`
         let result = await TruyVan("Admin", SQLQuery);
         console.log("Danh sách các điểm", result);
         return ({
@@ -570,7 +594,9 @@ async function TinhDiemTrungBinh(MaLop) {
     let SQLQuery = `SELECT MaLop, KETQUAHOCMON.MaMH, MaHS, [dbo].TINH_DIEMTB(CT_HOCMON.MaQTHoc) AS DiemTB
         FROM dbo.CT_HOCMON INNER JOIN dbo.KETQUAHOCMON ON KETQUAHOCMON.MaQTHoc = CT_HOCMON.MaQTHoc INNER JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaMH = KETQUAHOCMON.MaMH
         WHERE MaLop = '${MaLop}'
-        GROUP BY CT_HOCMON.MaQTHoc, MaLop, KETQUAHOCMON.MaMH, MaHS
+        GROUP BY CT_HOCMON.MaQTHoc, MaLop, KETQUAHOCMON.MaMH, MaHS;
+
+        EXEC [dbo].[LUU_DIEMTB];
     `
     let result = await TruyVan("Admin", SQLQuery);
     console.log("Thông tin trung bình lớp", result);
@@ -580,6 +606,37 @@ async function TinhDiemTrungBinh(MaLop) {
         message: 'Lấy thông tin trung bình lớp thành công!',
         result: result.result.recordset
     });
+}
+
+async function DanhSachLopHocTheoGV(MaGV) {
+    let SQLQuery = `SELECT DISTINCT LOP_MONHOC.MaLop, TenLop, MaGV, MaHocKy, MaKhoiLop, MaGV FROM dbo.LOP_MONHOC INNER JOIN dbo.LOP ON LOP.MaLop = LOP_MONHOC.MaLop WHERE MaGV = '${MaGV}'`;
+    let result = await TruyVan("Admin", SQLQuery);
+    console.log("Thông tin lớp", result);
+    if(result.statusCode != 200) return result;
+    return ({
+        statusCode: 200,
+        message: 'Lấy thông tin lớp thành công!',
+        result: result.result.recordset
+    });
+}
+
+async function DanhSachHocSinhTrongLopTheoMaLop(MaLop) {
+    try {
+        let SQLQuery = `SELECT TenLop, SiSo, HoTen, GioiTinh, NgSinh, DiaChi 
+        FROM LOP INNER JOIN dbo.HOCSINH_LOP ON HOCSINH_LOP.MaLop = LOP.MaLop INNER JOIN dbo.HOCSINH ON HOCSINH.MaHS = HOCSINH_LOP.MaHS
+        WHERE LOP.MaLop = '${MaLop}'`;
+
+        let result = await TruyVan("Admin", SQLQuery);
+        console.log("Danh sách các học sinh trong lớp theo mã lớp", result);
+        return result;
+    } catch (err) {
+        console.log(err);
+        return ({
+            statusCode: 400,
+            message: 'Lỗi truy vấn SQL!',
+            alert: 'Kiểm tra lại câu lệnh SQL!'
+        });
+    }
 }
 
 exports.DanhSachHocSinhTheoMaHS = DanhSachHocSinhTheoMaHS;
@@ -602,3 +659,5 @@ exports.DanhSachBaiDang = DanhSachBaiDang;
 exports.NoiDungBaiDang = NoiDungBaiDang;
 exports.XemThongTinLop = XemThongTinLop;
 exports.TinhDiemTrungBinh = TinhDiemTrungBinh;
+exports.DanhSachLopHocTheoGV = DanhSachLopHocTheoGV;
+exports.DanhSachHocSinhTrongLopTheoMaLop = DanhSachHocSinhTrongLopTheoMaLop;

@@ -84,7 +84,7 @@ html(lang='en')
                       a(href='/admin/DanhSachHocSinh') Danh Sách Học Sinh
                   if (role == "Admin")
                     .nbar-sub
-                      a(href='/admin/ThemHocSinh') Thêm Học Sinh
+                      a(href='/admin/ThemTaiKhoan') Thêm Học Sinh
           if(role == 'Admin' || role == 'GiaoVien')
             div
               button.dropdown-btn
@@ -118,7 +118,7 @@ html(lang='en')
                   .nbar-sub
                     a(href='/admin/DanhSachGiaoVien') Danh Sách Giáo Viên
                   .nbar-sub
-                    a(href='/admin/ThemGiaoVien') Thêm Giáo Viên
+                    a(href='/admin/ThemTaiKhoan') Thêm Giáo Viên
             // Bảng điểm
             
             if( role == "GiaoVien")
@@ -152,8 +152,30 @@ html(lang='en')
                   a(href='/admin/DanhSachBaiDang') Danh Sách Thông báo
                 .nbar-sub
                   a(href='/admin/ThemBaiDang') Tạo Thông báo
-        // Mới sửa
-        
+          // Quy Định
+          if (role == "Admin")
+            div
+                button.dropdown-btn
+                  i#icon_sn.fa-solid.fa-pen-ruler
+                  span.link_name Quy Định
+                  i#drop.fas.fa-angle-right
+                .dropdown-container
+                  a.link_name(href='#') Quy Định
+                  .nbar-sub
+                    a(href='/admin/QuyDinh') Chỉnh Sửa Quy Định
+            // Báo Cáo
+          if (role == "Admin" || role == "GiaoVien")
+            div
+                button.dropdown-btn
+                  i#icon_sn.fa-solid.fa-file-invoice
+                  span.link_name Báo Cáo
+                  i#drop.fas.fa-angle-right
+                .dropdown-container
+                  a.link_name(href='#') Báo Cáo
+                  .nbar-sub
+                    a(href='#') Báo Cáo Tổng Kết Môn
+                  .nbar-sub
+                    a(href='#') Báo Cáo Tổng Kết Học Kỳ
 
     section.home-section
       .home-content
@@ -169,21 +191,24 @@ html(lang='en')
           .search-group
             .submit-form-student.submit
               .form-group.local-form
-                select.form-control-edit-btn(required='')
-                  option Khối 10
-                  option Khối 11
-                  option Khối 12
+                select.form-control-edit-btn(required='' name='HocKy')
+                  option(value='') Chọn học kỳ
+                  option(value='1') Học kỳ 1
+                  option(value='2') Học kỳ 2
             .submit-form-student.submit
               .form-group.local-form
-                select.form-control-edit-btn(required='')
-                  option Tự Nhiên
-                  option Xã Hội
-            .search-bar
-              .form-group
-                input.form-control(type='text' placeholder='Tìm kiếm ...')
+                select.form-control-edit-btn(required='' name='MaNamHoc')
+                  option(value='') Chọn năm học
+            .submit-form-student.submit
+              .form-group.local-form
+                select.form-control-edit-btn(required='' name='MaKhoi')
+                  option(value='') Chọn khối
+            //- .search-bar
+            //-   .form-group
+            //-     input.form-control(type='text' placeholder='Tìm kiếm ...')
             .search-student-btn
               .search-btn
-                button.btn(type='button') Tìm Kiếm
+                button.btn(type='button') Lấy thông tin
         // End: Search Bar
         .student-form
           .card
@@ -194,7 +219,7 @@ html(lang='en')
                     .page-header-student-title
                       h3.page-title Lớp
                     .card-body_header-icon
-                      a.btn(href='/public/auth/edit-classroom.html')
+                      a.btn(href='/admin/ThemLopHoc')
                         i.fa-solid.fa-plus
                 .card-body_body
                   .Data-Table
@@ -225,7 +250,8 @@ html(lang='en')
                                     td 2021 - 2022
                                     td.text-end
                                         .action
-                                            a.delete-btn(href='#')
+                                            - var functionName_1 = "XoaLopHoc('" + LopHoc.MaLop + "')"
+                                            a.delete-btn(href='#',onclick=functionName_1)
                                                 i.fa-solid.fa-trash
                                             - var functionName = "XemThongTinLop('" + LopHoc.MaLop + "')"
                                             a.edit-btn.js-edit-student(href='#' onclick=functionName)

@@ -152,6 +152,30 @@ html(lang='en')
                   a(href='/admin/DanhSachBaiDang') Danh Sách Thông báo
                 .nbar-sub
                   a(href='/admin/ThemBaiDang') Tạo Thông báo
+          // Quy Định
+          if (role == "Admin")
+            div
+                button.dropdown-btn
+                  i#icon_sn.fa-solid.fa-pen-ruler
+                  span.link_name Quy Định
+                  i#drop.fas.fa-angle-right
+                .dropdown-container
+                  a.link_name(href='#') Quy Định
+                  .nbar-sub
+                    a(href='/admin/QuyDinh') Chỉnh Sửa Quy Định
+            // Báo Cáo
+          if (role == "Admin" || role == "GiaoVien")
+            div
+                button.dropdown-btn
+                  i#icon_sn.fa-solid.fa-file-invoice
+                  span.link_name Báo Cáo
+                  i#drop.fas.fa-angle-right
+                .dropdown-container
+                  a.link_name(href='#') Báo Cáo
+                  .nbar-sub
+                    a(href='#') Báo Cáo Tổng Kết Môn
+                  .nbar-sub
+                    a(href='#') Báo Cáo Tổng Kết Học Kỳ
         // Mới sửa
     section.home-section
       .home-content
@@ -171,7 +195,7 @@ html(lang='en')
                   .card-body_header
                     if(role == 'Admin')
                       .card-body_header-icon
-                        a.btn(href='./edit-student.html')
+                        a.btn(href='/admin/ThemTaiKhoan')
                           i.fa-solid.fa-plus
                 .card-body_body
                   .Data-Table
@@ -204,7 +228,7 @@ html(lang='en')
                               tr.odd.table-normal(role='row', id=user.MaGV)
                                 td #{user.MaGV}
                                 td
-                                    a(href='./view-student.html') #{user.HoTen}
+                                    a(href='') #{user.HoTen}
                                 td #{user.GioiTinh}
                                 td #{date}
                                 td +84756126896
@@ -213,7 +237,8 @@ html(lang='en')
                                 if(role == 'Admin')
                                   td.text-end
                                     .action
-                                      a.delete-btn(href='#')
+                                      - var functionName_1 = "XoaGiaoVien('" + user.MaGV + "')"
+                                      a.delete-btn(href='#',onclick=functionName_1)
                                           i.fa-solid.fa-trash
                                       - var functionName = 'LayThongTin(' + user.MaGV + ')';
                                       a.edit-btn.js-edit-student(href='#', onclick=functionName)
@@ -295,3 +320,4 @@ html(lang='en')
     script(src='/public/source/js/main.js')
     script(src='/public/source/js/edit-student.js ')
     script(src='/public/source/js/teachers.js ')
+    script(src='/public/source/js/edit-teacher.js ')
