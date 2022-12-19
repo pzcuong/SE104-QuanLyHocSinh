@@ -68,13 +68,23 @@ async function ThemTaiKhoan(req, res, next) {
 }
 
 async function ThemLopHoc(req, res, next) {
-    
-    const malop = req.body.malop;
-    const tenlop = req.body.tenlop;
-    const makhoilop = req.body.makhoilop;
-    const mahocky = req.body.mahocky;
-    const siso = req.body.siso;
-    if( !malop || !tenlop || !makhoilop || !mahocky || !siso )   
+    const MaLop = req.body.MaLop;
+    const TenLop = req.body.TenLop;
+    const MaKhoiLop = req.body.MaKhoiLop;
+    const HocKy = req.body.HocKy;
+    const MaNamHoc = req.body.MaNamHoc;
+
+    if (!MaNamHoc) {
+        DanhSachNamHoc = await userModel.DanhSachNamHoc();
+        req.body.NamHoc = DanhSachNamHoc.result.recordsets[0][0].NamHoc;
+        return res.json({
+            statusCode: 200,
+            message: 'Lấy danh sách năm học thành công',
+            result: DanhSachNamHoc.result.recordsets[0]
+        });
+    }
+
+    if( !MaLop || !TenLop || !MaKhoiLop || !HocKy)   
         return res
             .status(400)
             .send({
@@ -83,8 +93,7 @@ async function ThemLopHoc(req, res, next) {
                 alert: 'Vui lòng nhập đầy đủ thông tin.',
             });
 
-    const Class = await adminModel.getClass(malop);
-    console.log(malop);
+    const Class = await adminModel.getClass(MaLop);
     if(Class.statusCode == 400 || Class.statusCode == 500)
         return res
                 .status(Class.statusCode)
@@ -95,15 +104,15 @@ async function ThemLopHoc(req, res, next) {
                 });
         
     else if(Class.statusCode == 404) {
-    const data = {
-                    malop: malop,
-                    tenlop: tenlop,
-                    makhoilop: makhoilop,
-                    mahocky: mahocky,
-                    siso: siso
-    };
-        
-    const newClass = await adminModel.createClass(data);
+        const data = {
+            MaLop: MaLop,
+            TenLop: TenLop,
+            MaKhoiLop: MaKhoiLop,
+            HocKy: HocKy,
+            MaNamHoc: MaNamHoc
+        };
+            
+        const newClass = await adminModel.ThemLopHoc(data);
         
         if(newClass.statusCode === 200 ) 
             return res
@@ -111,8 +120,8 @@ async function ThemLopHoc(req, res, next) {
                 .send({
                     statusCode: 200,
                     message: 'Tạo lớp thành công',
-                    malop: malop,
-                    redirect: '/admin/ThemLopHoc'
+                    malop: data.MaLop,
+                    redirect: '/admin/DanhSachLopHoc'
                 });
         else
             return res
@@ -123,7 +132,7 @@ async function ThemLopHoc(req, res, next) {
                             alert: "Tạo lớp không thành công",
                             redirect: '/admin/ThemLopHoc'
                     });
-                }
+    }
     else
         return res
             .status(400)
@@ -521,6 +530,67 @@ async function XoaBaiDang(req, res) {
             });
 }
 
+async function XoaHocSinh(req, res) {
+    const result = await adminModel.XoaHocSinh(req.body.MaHS);
+    if(result.statusCode === 200)
+        return res
+            .status(200)
+            .send({
+                statusCode: 200,
+                message: 'Xóa học sinh thành công',
+                data: result.result
+            });
+    else
+        return res
+            .status(400)
+            .send({
+                statusCode: 400,
+                message: 'Xóa học sinh không thành công',
+            });
+}
+
+async function XoaGiaoVien(req, res) {
+    const result = await adminModel.XoaGiaoVien(req.body.MaGV);
+    if(result.statusCode === 200)
+        return res
+            .status(200)
+            .send({
+                statusCode: 200,
+                message: 'Xóa giáo viên thành công',
+                data: result.result
+            });
+    else
+        return res
+            .status(400)
+            .send({
+                statusCode: 400,
+                message: 'Xóa giáo viên không thành công',
+            });
+}
+
+async function XoaLopHoc(req, res) {
+    const result = await adminModel.XoaLopHoc(req.body.MaLop);
+    if(result.statusCode === 200)
+        return res
+            .status(200)
+            .send({
+                statusCode: 200,
+                message: 'Xóa lớp học thành công',
+                data: result.result
+            });
+    else
+        return res
+            .status(400)
+            .send({
+                statusCode: 400,
+                message: 'Xóa lớp học không thành công',
+            });
+}
+
+exports.XoaLopHoc = XoaLopHoc;
+exports.XoaGiaoVien = XoaGiaoVien;
+exports.XoaHocSinh = XoaHocSinh;
+
 exports.XemThongTinLop = XemThongTinLop;
 exports.ThemGiaoVienVaoLop = ThemGiaoVienVaoLop;
 exports.ThemHocSinhVaoLop = ThemHocSinhVaoLop;
@@ -535,3 +605,47 @@ exports.DanhSachGiaoVien = DanhSachGiaoVien;
 exports.DanhSachBaiDang = DanhSachBaiDang;
 exports.XemDanhSachLop = XemDanhSachLop;
 exports.XoaBaiDang = XoaBaiDang;
+
+
+async function XemQuyDinh(req, res) { 
+    let result = await adminModel.XemQuyDinh();
+    if(result.statusCode === 200) {
+        console.log(result.result.recordset)
+        let html = pug.renderFile('public/admin/QuyDinh.pug',{
+            ClassDataList:  result.result.recordset,
+            user: {
+                HoTen: req.user.result.HoTen,
+            }, role: req.user.role
+        });
+        res.send(html);
+    } else {
+        let html = pug.renderFile('public/404.pug', { 
+            message: result.message,
+            redirect: 'public/Home.pug'
+        });
+        res.send(html);
+    }
+}
+
+async function ThayDoiQuyDinh(req, res) {
+    let result = await adminModel.ThayDoiQuyDinh(req.body);
+    if(result.statusCode === 200) {
+        return res
+            .status(200)
+            .send({
+                statusCode: 200,
+                message: 'Thay đổi quy định thành công',
+                data: result.result
+            });
+    } else {
+        return res
+            .status(400)
+            .send({
+                statusCode: 400,
+                message: 'Thay đổi quy định không thành công',
+            });
+    }
+}
+
+exports.XemQuyDinh = XemQuyDinh;
+exports.ThayDoiQuyDinh = ThayDoiQuyDinh;

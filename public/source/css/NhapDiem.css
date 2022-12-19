@@ -59,3 +59,12 @@ main .Bd-content #btnSave {
   background-color: #3d5ee1;
   margin-top: 5px;
 }
+main .Bd-content #btnTinhDTB {
+  border-radius: 3px;
+  padding: 8px 10px;
+  border: none;
+  color: #fff;
+  background-color: #3d5ee1;
+  margin-top: 5px;
+  margin-left: 50px;
+}

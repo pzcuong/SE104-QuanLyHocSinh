@@ -85,7 +85,7 @@ html(lang='en')
                       a(href='/admin/DanhSachHocSinh') Danh Sách Học Sinh
                   if (role == "Admin")
                     .nbar-sub
-                      a(href='/admin/ThemHocSinh') Thêm Học Sinh
+                      a(href='/admin/ThemTaiKhoan') Thêm Học Sinh
           if(role == 'Admin' || role == 'GiaoVien')
             div
               button.dropdown-btn
@@ -119,7 +119,7 @@ html(lang='en')
                   .nbar-sub
                     a(href='/admin/DanhSachGiaoVien') Danh Sách Giáo Viên
                   .nbar-sub
-                    a(href='/admin/ThemGiaoVien') Thêm Giáo Viên
+                    a(href='/admin/ThemTaiKhoan') Thêm Giáo Viên
             // Bảng điểm
             
             if( role == "GiaoVien")
@@ -153,6 +153,30 @@ html(lang='en')
                   a(href='/admin/DanhSachBaiDang') Danh Sách Thông báo
                 .nbar-sub
                   a(href='/admin/ThemBaiDang') Tạo Thông báo
+          // Quy Định
+          if (role == "Admin")
+            div
+                button.dropdown-btn
+                  i#icon_sn.fa-solid.fa-pen-ruler
+                  span.link_name Quy Định
+                  i#drop.fas.fa-angle-right
+                .dropdown-container
+                  a.link_name(href='#') Quy Định
+                  .nbar-sub
+                    a(href='/admin/QuyDinh') Chỉnh Sửa Quy Định
+            // Báo Cáo
+          if (role == "Admin" || role == "GiaoVien")
+            div
+                button.dropdown-btn
+                  i#icon_sn.fa-solid.fa-file-invoice
+                  span.link_name Báo Cáo
+                  i#drop.fas.fa-angle-right
+                .dropdown-container
+                  a.link_name(href='#') Báo Cáo
+                  .nbar-sub
+                    a(href='#') Báo Cáo Tổng Kết Môn
+                  .nbar-sub
+                    a(href='#') Báo Cáo Tổng Kết Học Kỳ
         // Mới sửa
     section.home-section
       .home-content
@@ -183,6 +207,7 @@ html(lang='en')
 
           //- Hide button in style 
           button#btnSave(hidden onclick="LuuDiem()") Lưu điểm
+          button#btnTinhDTB(hidden onclick="TinhDTB()") Tính điểm trung bình
 
     script(src='/public/source/js/main.js')
    
@@ -275,12 +300,17 @@ html(lang='en')
         }
 
         let button = document.getElementById("btnSave");
+        let buttonDTB = document.getElementById("btnTinhDTB");
         button.hidden = false;
+        buttonDTB.hidden = false;
 
         console.log(result.result)
         data = []
 
         for(let i = 0; i < result.result.length; i++) {
+          if (result.result[i].DiemTB == null) {
+            result.result[i].DiemTB = 0;
+          }
           data.push({
             "MSHS": result.result[i].MaHS, 
             "HoTen": result.result[i].HoTen, 
@@ -289,7 +319,7 @@ html(lang='en')
             "KT1T": result.result[i].KT1T, 
             "KTGK": result.result[i].KTGK, 
             "KTCK": result.result[i].KTCK,
-            "DiemTB": result.result[i].DiemTB
+            "DiemTB": result.result[i].DiemTB.toFixed(2)
           })
         }
 
@@ -315,3 +345,21 @@ html(lang='en')
         });
       }
     
+      async function TinhDTB() {
+        let url = window.location.href;
+        //- url format: http://localhost:8080/user/NhapDiem/TN101/\
+        console.log(url)
+        let MaLop = url.substring(url.lastIndexOf('/') + 1, url.length - 6);
+        let response = await fetch('/user/TinhDiemTrungBinh/' + MaLop, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({MaLop: MaLop}),
+          json: true
+        })
+
+        let result = await response.json();
+        console.log(result)
+        alert(result.message)
+      }

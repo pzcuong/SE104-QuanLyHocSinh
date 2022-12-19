@@ -23,7 +23,11 @@ router.route('/ThemTaiKhoan' )
 
 router.route('/ThemLopHoc')
 .get(isAuthAdmin, (req, res) => {
-    let html = pug.renderFile('public/admin/ThemLopHoc.pug');
+    let html = pug.renderFile('public/admin/ThemLopHoc.pug', {
+		user: req.user.result,
+		image: req.image,
+		role: req.user.role
+	});
     res.send(html);
 })
 .post(isAuthAdmin,adminController.ThemLopHoc)
@@ -82,5 +86,18 @@ router.get('/Dashboard', isAuthAdmin, (req, res) => {
 router.route('/DanhSachLopHoc')
 	.get(isAuthAdmin, adminController.XemDanhSachLop)
 	.post(isAuthAdmin, adminController.XemThongTinLop);
+
+router.route('/XoaHocSinh')
+	.post(isAuthAdmin,adminController.XoaHocSinh)
+
+router.route('/XoaLopHoc')
+	.post(isAuthAdmin,adminController.XoaLopHoc)
+
+router.route('/XoaGiaoVien')
+	.post(isAuthAdmin,adminController.XoaGiaoVien)
+
+router.route('/QuyDinh')
+	.get(isAuthAdmin, adminController.XemQuyDinh)
+	.post(isAuthAdmin,adminController.ThayDoiQuyDinh)
 
 module.exports = router;

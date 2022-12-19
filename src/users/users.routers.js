@@ -68,4 +68,13 @@ router.route('/DanhSachHocSinh')
 router.route('/DanhSachGiaoVien')
 	.get(authMiddleware.isAuthGiaoVien, adminController.DanhSachGiaoVien);
 
+router.route('/DanhSachLopHoc')
+	.get(isAuthGiaoVien, userController.DanhSachLopHocTheoGV);
+
+router.route('/BaoCaoHocKy')
+	.get(isAuthGiaoVien, userController.BaoCaoHocKy);
+
+router.route('/DanhSachHocSinhTrongLop/:MaLop/')
+	.get(isAuthGiaoVien, userController.DanhSachHocSinhTrongLopTheoMaLop);
+
 module.exports = router;

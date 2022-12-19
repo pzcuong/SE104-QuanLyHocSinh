@@ -211,35 +211,7 @@ async function ThayDoiTT() {
   //window.open(text.captcha_url, "mywindow","menubar=1,resizable=1,width=350,height=250").focus();
 }
 
-async function ThemLopHoc() {
-  var form = document.querySelector("#formElem");
 
-  data = {
-    malop: form.querySelector("input[name=malop]").value,
-    tenlop: form.querySelector("input[name=tenlop]").value,
-    mahocky: form.querySelector("input[name=mahocky]").value,
-    makhoilop: form.querySelector("input[name=makhoilop]").value,
-    siso: form.querySelector("input[name=siso]").value
- 
-  }
-
-  let response = await fetch('/admin/ThemLopHoc', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-          json: true
-  })
-
-  let text = await response.json(); 
-  console.log(text)
-  alert(text.message);
-  if(text.redirect)
-      window.location.href = text.redirect;
-  //document.querySelector("#encoded").innerHTML = text.message;
-  //window.open(text.captcha_url, "mywindow","menubar=1,resizable=1,width=350,height=250").focus();
-}
 
 //insert source code js
 // Language: javascript
