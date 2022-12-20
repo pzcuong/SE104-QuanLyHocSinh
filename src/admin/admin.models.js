@@ -276,9 +276,9 @@ async function XoaHocSinh(MaHS) {
 
         let SQLQuery = `delete from HOCSINH where MaHS = N'${MaHS}'`;
         let result = await TruyVan("Admin", SQLQuery);
-        let SQLQuery_XT = `delete from XacThuc where MaND = N'${MaHS}'`;
-        let result_XT = await TruyVan("Admin", SQLQuery_XT);
-        console.log("Xóa học sinh", result_XT);
+        // let SQLQuery_XT = `delete from XacThuc where MaND = N'${MaHS}'`;
+        // let result_XT = await TruyVan("Admin", SQLQuery_XT);
+        console.log("Xóa học sinh", result);
         return result;
     } catch(err) {
         console.log(err);
@@ -295,9 +295,9 @@ async function XoaGiaoVien(MaGV) {
 
         let SQLQuery = `delete from GIAOVIEN where MaGV = N'${MaGV}'`;
         let result = await TruyVan("Admin", SQLQuery);
-        let SQLQuery_XT = `delete from XacThuc where MaND = N'${MaGV}'`;
-        let result_XT = await TruyVan("Admin", SQLQuery_XT);
-        console.log("Xóa giáo viên", result_XT);
+        // let SQLQuery_XT = `delete from XacThuc where MaND = N'${MaGV}'`;
+        // let result_XT = await TruyVan("Admin", SQLQuery_XT);
+        console.log("Xóa giáo viên", result);
         return result;
     } catch(err) {
         console.log(err);

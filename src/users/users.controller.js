@@ -118,6 +118,7 @@ async function DanhSachDiem (req, res) {
     let DanhSachNamHoc;
     console.log(req.body)
     req.MaLop = req.params.MaLop;
+    let MaLop = req.params.MaLop;
 
     if(!req.body.NamHoc) {
         DanhSachNamHoc = await usersModel.DanhSachNamHoc();
@@ -131,7 +132,9 @@ async function DanhSachDiem (req, res) {
 
     if(!req.body.MaMH) {
         console.log(req.user)
-        let result = await usersModel.DanhSachMHDoGVDay(req.user.result.MaGV, req.body.HocKy, req.body.NamHoc);
+        let Role = req.user.role;
+        console.log(req.user)
+        let result = await usersModel.DanhSachMHDoGVDay(Role, MaLop, req.user.result.MaGV, req.body.HocKy, req.body.NamHoc);
         console.log(result.result)
         return res.json({
             statusCode: 200,
@@ -141,7 +144,6 @@ async function DanhSachDiem (req, res) {
     }
 
     let MaMH = req.body.MaMH;
-    let MaLop = req.params.MaLop;
     let result = await usersModel.DanhSachDiem(MaMH, MaLop, req.body.HocKy, req.body.NamHoc);
     console.log("Danh sach diem")
     console.log(result.result)
@@ -268,22 +270,13 @@ async function DanhSachLopHocTheoGV(req, res) {
     }
 }
 
-exports.DanhSachHocSinhTheoMaHS = DanhSachHocSinhTheoMaHS;
-exports.TinhDiemTrungBinh = TinhDiemTrungBinh;
-exports.DanhSachLopHocTheoGV = DanhSachLopHocTheoGV;
-
-
-async function BaoCaoHocKy(req, res) {
+async function DanhSachLopHocTheoGVDeNhapDiem(req, res) {
     console.log(req.user.result)
-    let MaGV = req.user.result.MaGV;
-    if(!MaGV) 
-        MaGV = "20521150"
-    
-    let result = await usersModel.DanhSachHocSinhTheoMaHS("MaHS");
-    console.log("Danh sach báo cáo theo ma gv")
+    let result = await usersModel.DanhSachLopHocTheoGV(req.user.result.MaGV);
+    console.log("Danh sach lop hoc")
     console.log(result.result)
     if(result.statusCode === 200) {
-        let html = pug.renderFile('public/user/BaoCaoTBHK.pug',{
+        let html = pug.renderFile('public/giaovien/DanhSachLopHoc.pug',{
             ClassDataList:  result.result,
             user: {
                 HoTen: req.user.result.HoTen,
@@ -293,9 +286,67 @@ async function BaoCaoHocKy(req, res) {
     } else {
         return res.json({
             statusCode: 500,
-            message: 'Lấy danh sách báo cáo theo MaGV thất bại',
+            message: 'Lấy danh sách lớp học thất bại',
         })
     }
+}
+
+exports.DanhSachHocSinhTheoMaHS = DanhSachHocSinhTheoMaHS;
+exports.TinhDiemTrungBinh = TinhDiemTrungBinh;
+exports.DanhSachLopHocTheoGV = DanhSachLopHocTheoGV;
+
+
+async function BaoCaoMonHoc(req, res) {
+    let DanhSachNamHoc;
+    console.log(req.body)
+    req.MaLop = req.params.MaLop;
+
+    if(!req.body.NamHoc) {
+        DanhSachNamHoc = await usersModel.DanhSachNamHoc();
+        req.body.NamHoc = DanhSachNamHoc.result.recordsets[0][0].NamHoc;
+        return res.json({
+            statusCode: 200,
+            message: 'Lấy danh sách năm học thành công',
+            result: DanhSachNamHoc.result.recordsets[0]
+        });
+    }
+
+    if(!req.body.MaMH) {
+        console.log(req.user)
+        let Role = req.user.role;
+        console.log(Role);
+        let result = await usersModel.XemBaoCaoDanhSachMH(Role, req.user.result.MaGV, req.body.HocKy, req.body.NamHoc);
+        console.log(result.result)
+        return res.json({
+            statusCode: 200,
+            message: 'Lấy danh sách môn học thành công',
+            result: result.result
+        });
+    }
+
+    let MaMH = req.body.MaMH;
+    let MaLop = req.params.MaLop;
+    let data = {
+        MaGV: req.user.result.MaGV,
+        MaMH: MaMH,
+        HocKy: req.body.HocKy,
+        NamHoc: req.body.NamHoc
+    }
+    let result = await usersModel.BaoCaoMonHoc(MaMH, data);
+    console.log(result.result)
+    if(result.statusCode === 200) {
+        return res.json({
+            statusCode: 200,
+            message: 'Lấy báo cáo thành công',
+            result: result.result.recordsets
+        });
+    } else {
+        return res.json({
+            statusCode: 500,
+            message: 'Lấy báo cáo thất bại',
+        })
+    }
+
 }
 
 async function DanhSachHocSinhTrongLopTheoMaLop(req, res) {
@@ -320,5 +371,6 @@ async function DanhSachHocSinhTrongLopTheoMaLop(req, res) {
     }
 }
 
-exports.BaoCaoHocKy = BaoCaoHocKy;
+exports.BaoCaoMonHoc = BaoCaoMonHoc;
 exports.DanhSachHocSinhTrongLopTheoMaLop = DanhSachHocSinhTrongLopTheoMaLop;
+exports.DanhSachLopHocTheoGVDeNhapDiem = DanhSachLopHocTheoGVDeNhapDiem;

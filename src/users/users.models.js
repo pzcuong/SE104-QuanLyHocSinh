@@ -365,7 +365,7 @@ async function DanhSachNamHoc(HocKy) {
 
 async function DanhSachHocSinhTrongLop(MaLop, HocKy, Nam2) {
     try {
-        let SQLQuery = `SELECT * FROM HOCKY
+        let SQLQuery = `SELECT DISTINCT * FROM HOCKY
             inner join NAMHOC on HOCKY.MaNam = NAMHOC.MaNamHoc
             inner join LOP on LOP.MaHocKy = HOCKY.MaHocKy
             inner join HOCSINH_LOP on HOCSINH_LOP.MaLop = LOP.MaLop
@@ -496,7 +496,7 @@ async function DanhSachDiem(MaMH, MaLop, HocKy, Nam2) {
         //     GROUP BY KQHM.MaHS, MaLHKT, Diem, L.MaLop, KQHM.DiemTBMon) BD
         // WHERE HS.MaHS = BD.MaHS`;
         let SQLQuery = `	
-            SELECT DISTINCT HOCSINH.MaHS, HoTen, KQHM.MaLHKT, KQHM.Diem, KQHM.DiemTBMon, LOP.MaLop, TenLop FROM (
+            SELECT HOCSINH.MaHS, HoTen, KQHM.MaLHKT, KQHM.Diem, KQHM.DiemTBMon, LOP.MaLop, TenLop FROM (
                 SELECT MaHS, MaLHKT, Diem, DiemTBMon
                 FROM dbo.KETQUAHOCMON INNER JOIN dbo.CT_HOCMON ON CT_HOCMON.MaQTHoc = KETQUAHOCMON.MaQTHoc
                 WHERE MaMH = '${MaMH}'
@@ -519,23 +519,41 @@ async function DanhSachDiem(MaMH, MaLop, HocKy, Nam2) {
     }
 }
 
-async function DanhSachMHDoGVDay(MaGV, HocKy, Nam2) {
+async function DanhSachMHDoGVDay(Role, MaLop, MaGV, HocKy, Nam2) {
     try {
-        let SQLQuery = `select MH.MaMH, TenMH from LOP L 
-                inner join HOCKY HK on L.MaHocKy = HK.MaHocKy 
-                inner join LOP_MONHOC L_MH ON L.MaLop = L_MH.MaLop
-                inner join MONHOC MH ON MH.MaMH = L_MH.MaMH
-            where L_MH.MaGV = '${MaGV}' and HocKy = '${HocKy}' and MaNam = 'NH${Nam2}'`;
-        
-        console.log(SQLQuery)
-        let result = await TruyVan("Admin", SQLQuery);
-        
-        console.log("Danh sách các lớp do GV dạy", result);
-        return ({
-            statusCode: 200,
-            message: 'Lấy danh sách lớp thành công!',
-            result: result.result.recordset
-        });
+        let result;
+        console.log("Role", Role)
+        if (Role == "GiaoVien") {
+            let SQLQuery = `select MH.MaMH, TenMH from LOP L 
+                    inner join HOCKY HK on L.MaHocKy = HK.MaHocKy 
+                    inner join LOP_MONHOC L_MH ON L.MaLop = L_MH.MaLop
+                    inner join MONHOC MH ON MH.MaMH = L_MH.MaMH
+                where L.MaLop = '${MaLop}' and L_MH.MaGV = '${MaGV}' and HocKy = '${HocKy}' and MaNam = 'NH${Nam2}'`;
+            
+            console.log(SQLQuery)
+            result = await TruyVan("Admin", SQLQuery);
+            console.log("Danh sách các lớp do GV dạy", result);
+            return ({
+                statusCode: 200,
+                message: 'Lấy danh sách lớp thành công!',
+                result: result.result.recordset
+            });
+        } else {
+            let SQLQuery = `select MH.MaMH, TenMH from LOP L 
+                    inner join HOCKY HK on L.MaHocKy = HK.MaHocKy 
+                    inner join LOP_MONHOC L_MH ON L.MaLop = L_MH.MaLop
+                    inner join MONHOC MH ON MH.MaMH = L_MH.MaMH
+                where L.MaLop = '${MaLop}' and HocKy = '${HocKy}' and MaNam = 'NH${Nam2}'`;
+            
+            console.log(SQLQuery)
+            result = await TruyVan("Admin", SQLQuery);
+            console.log("Danh sách các lớp do GV dạy", result);
+            return ({
+                statusCode: 200,
+                message: 'Lấy danh sách lớp thành công!',
+                result: result.result.recordset
+            });
+        }
     } catch (err) {
         console.log(err);
         return ({
@@ -622,13 +640,95 @@ async function DanhSachLopHocTheoGV(MaGV) {
 
 async function DanhSachHocSinhTrongLopTheoMaLop(MaLop) {
     try {
-        let SQLQuery = `SELECT TenLop, SiSo, HoTen, GioiTinh, NgSinh, DiaChi 
+        let SQLQuery = `SELECT DISTINCT TenLop, SiSo, HoTen, GioiTinh, NgSinh, DiaChi 
         FROM LOP INNER JOIN dbo.HOCSINH_LOP ON HOCSINH_LOP.MaLop = LOP.MaLop INNER JOIN dbo.HOCSINH ON HOCSINH.MaHS = HOCSINH_LOP.MaHS
         WHERE LOP.MaLop = '${MaLop}'`;
 
         let result = await TruyVan("Admin", SQLQuery);
         console.log("Danh sách các học sinh trong lớp theo mã lớp", result);
         return result;
+    } catch (err) {
+        console.log(err);
+        return ({
+            statusCode: 400,
+            message: 'Lỗi truy vấn SQL!',
+            alert: 'Kiểm tra lại câu lệnh SQL!'
+        });
+    }
+}
+
+async function BaoCaoMonHoc(Role, data) {
+    try {
+        let result;
+        if (Role == "GiaoVien") {
+            let SQLQuery = `SELECT DISTINCT TenLop, SiSo, SoLuongDat, TiLe
+            FROM dbo.BAOCAOMONHOC 
+                RIGHT JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaMH = BAOCAOMONHOC.MaMH AND LOP_MONHOC.MaLop = BAOCAOMONHOC.MaLop
+                INNER JOIN dbo.LOP ON LOP.MaLop = LOP_MONHOC.MaLop 
+                INNER JOIN dbo.HOCKY ON HOCKY.MaHocKy = LOP.MaHocKy
+            WHERE MaGV = '${data.MaGV}' AND LOP_MONHOC.MaMH = '${data.MaMH}' AND HocKy = '${data.HocKy}' AND MaNam = 'NH${data.NamHoc}'
+            `;
+            result = await TruyVan("Admin", SQLQuery);
+            console.log("Báo cáo môn học", result);
+            return result;
+        } else {
+            let SQLQuery = `SELECT DISTINCT TenLop, SiSo, SoLuongDat, TiLe
+            FROM dbo.BAOCAOMONHOC 
+                RIGHT JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaMH = BAOCAOMONHOC.MaMH AND LOP_MONHOC.MaLop = BAOCAOMONHOC.MaLop
+                INNER JOIN dbo.LOP ON LOP.MaLop = LOP_MONHOC.MaLop 
+                INNER JOIN dbo.HOCKY ON HOCKY.MaHocKy = LOP.MaHocKy
+            WHERE LOP_MONHOC.MaMH = '${data.MaMH}' AND HocKy = '${data.HocKy}' AND MaNam = 'NH${data.NamHoc}'
+            `;
+            console.log("SQLQuery", SQLQuery)
+            result = await TruyVan("Admin", SQLQuery);
+            console.log("Báo cáo môn học", result);
+            return result;
+        }
+    } catch (err) {
+        console.log(err);
+        return ({
+            statusCode: 400,
+            message: 'Lỗi truy vấn SQL!',
+            alert: 'Kiểm tra lại câu lệnh SQL!'
+        });
+    }
+}
+
+async function XemBaoCaoDanhSachMH(Role, MaGV, HocKy, Nam2) {
+    try {
+        let result;
+        console.log("Role", Role)
+        if (Role == "GiaoVien") {
+            let SQLQuery = `select MH.MaMH, TenMH from LOP L 
+                    inner join HOCKY HK on L.MaHocKy = HK.MaHocKy 
+                    inner join LOP_MONHOC L_MH ON L.MaLop = L_MH.MaLop
+                    inner join MONHOC MH ON MH.MaMH = L_MH.MaMH
+                where L_MH.MaGV = '${MaGV}' and HocKy = '${HocKy}' and MaNam = 'NH${Nam2}'`;
+            
+            console.log(SQLQuery)
+            result = await TruyVan("Admin", SQLQuery);
+            console.log("Danh sách các lớp do GV dạy", result);
+            return ({
+                statusCode: 200,
+                message: 'Lấy danh sách lớp thành công!',
+                result: result.result.recordset
+            });
+        } else {
+            let SQLQuery = `select MH.MaMH, TenMH from LOP L 
+                    inner join HOCKY HK on L.MaHocKy = HK.MaHocKy 
+                    inner join LOP_MONHOC L_MH ON L.MaLop = L_MH.MaLop
+                    inner join MONHOC MH ON MH.MaMH = L_MH.MaMH
+                where HocKy = '${HocKy}' and MaNam = 'NH${Nam2}'`;
+            
+            console.log(SQLQuery)
+            result = await TruyVan("Admin", SQLQuery);
+            console.log("Danh sách các lớp do GV dạy", result);
+            return ({
+                statusCode: 200,
+                message: 'Lấy danh sách lớp thành công!',
+                result: result.result.recordset
+            });
+        }
     } catch (err) {
         console.log(err);
         return ({
@@ -661,3 +761,5 @@ exports.XemThongTinLop = XemThongTinLop;
 exports.TinhDiemTrungBinh = TinhDiemTrungBinh;
 exports.DanhSachLopHocTheoGV = DanhSachLopHocTheoGV;
 exports.DanhSachHocSinhTrongLopTheoMaLop = DanhSachHocSinhTrongLopTheoMaLop;
+exports.XemBaoCaoDanhSachMH = XemBaoCaoDanhSachMH;
+exports.BaoCaoMonHoc = BaoCaoMonHoc;

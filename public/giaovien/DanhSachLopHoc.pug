@@ -4,11 +4,12 @@ html(lang='en')
     meta(charset='UTF-8')
     meta(http-equiv='X-UA-Compatible' content='IE=edge')
     meta(name='viewport' content='width=device-width, initial-scale=1.0')
-    link(rel='stylesheet' href='/public/source/css/baocaohocky.css ')
+    link(rel='stylesheet' href='/public/source/css/classroom.css  ')
+    link(rel='stylesheet' href='/public/source/css/edit-classroom.css ')
     link(rel='stylesheet' href='/public/source/fonts/fontawesome-free-6.2.0-web/css/all.css')
     link(rel='icon' type='image/x-icon' href='/public/source/img/favicon.png')
     link(rel='stylesheet' href='/public/source/css/style.css')
-    script(src='/public/source/js/script.js')
+    script(src="/public/source/js/script.js")
     script(src='https://kit.fontawesome.com/7b85820244.js' crossorigin='anonymous')
     title CoCoEdu
   body
@@ -175,8 +176,8 @@ html(lang='en')
                     a(href='#') Báo Cáo Tổng Kết Môn
                   .nbar-sub
                     a(href='#') Báo Cáo Tổng Kết Học Kỳ
+        
 
-                    
     section.home-section
       .home-content
         i.fa-solid.fa-bars
@@ -185,73 +186,71 @@ html(lang='en')
         .page-header
           .page-header-title
             .page-header-student-title
-              h3.page-title Báo Cáo Tổng Học Kỳ
+              h3.page-title Danh Sách Lớp
         // Start: Search Bar
         .student-group-form
           .search-group
-            .submit-form
-              .submit-form-student.submit
-                .form-group.local-form
-                  select.form-control-edit-btn(required='')
-                    option Chọn năm học
-                    option Năm 2019-2020
-                    option Năm 2020-2021
-                    option Năm 2021-2022
-              .submit-form-student.submit
-                .form-group.local-form
-                  select.form-control-edit-btn(required='')
-                    option Chọn học kỳ
-                    option Học kỳ I
-                    option Học kỳ II
+            .submit-form-student.submit
+              .form-group.local-form
+                select.form-control-edit-btn(required='' name='HocKy')
+                  option(value='') Chọn học kỳ
+                  option(value='1') Học kỳ 1
+                  option(value='2') Học kỳ 2
+            .submit-form-student.submit
+              .form-group.local-form
+                select.form-control-edit-btn(required='' name='MaNamHoc')
+                  option(value='') Chọn năm học
+            .submit-form-student.submit
+              .form-group.local-form
+                select.form-control-edit-btn(required='' name='MaKhoi')
+                  option(value='') Chọn khối
+            //- .search-bar
+            //-   .form-group
+            //-     input.form-control(type='text' placeholder='Tìm kiếm ...')
             .search-student-btn
               .search-btn
-                button.btn(type='button') Tìm Kiếm
+                button.btn(type='button') Lấy thông tin
         // End: Search Bar
-        .subject-form
+        .student-form
           .card
             .card-table
               .card-body
                 .card-body_head
                   .card-body_header
                     .page-header-student-title
-                      h3.page-title Học Kỳ
+                      h3.page-title Lớp
+
                 .card-body_body
                   .Data-Table
                     .Data-Table-body
                       .Table-body
                         table.Table
-                          thead.subject-thead
+                          thead.student-thead
                             tr.thead(role='row')
-                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='STT')
-                                | STT
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='MaLop')
+                                | Mã Lớp
                               th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='Lop')
-                                | Lớp
-                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='SiSo')
-                                | Sĩ Số
-                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='SoLuongDat')
-                                | Số Lượng Đạt
-                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='TiLe')
-                                | Tỉ Lệ
-                          tbody.subject-tbody
-                            tr.table-normal(role='row')
-                              td 1
-                              td 10A1
-                              td 40
-                              td 40/40
-                              td 100%
-                            tr.table-normal(role='row')
-                              td 2
-                              td 10A2
-                              td 40
-                              td 39/40
-                              td 97,5%
-                            tr.table-normal(role='row')
-                              td 3
-                              td 10A3
-                              td 40
-                              td 40/40
-                              td 100%
+                                | Tên Lớp
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='Khoi')
+                                | Khối
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='HocKy')
+                                | Học Kỳ
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='NamHoc')
+                                | Năm Học
+
+                          tbody.student-tbody
+                            each LopHoc in ClassDataList
+                                tr.odd.table-normal(role='row' id=LopHoc.MaLop)
+                                    td #{LopHoc.MaLop}
+                                    - var href = '/user/NhapDiem/' + LopHoc.MaLop + '/'
+                                    td
+                                        a(href=href) #{LopHoc.TenLop}
+                                    td #{LopHoc.MaKhoiLop}
+                                    td #{LopHoc.MaHocKy}
+                                    td 2021 - 2022
+
                     .Data-Table-footer
+
     script(src='/public/source/js/main.js')
     script(src='/public/source/js/edit-student.js ')
     script(src='/public/source/js/students.js ')
