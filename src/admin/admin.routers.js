@@ -111,5 +111,7 @@ router.route('/ThemVaiTro')
 	})
 	.post(isAuthAdmin, adminController.ThemVaiTro)
 
+router.route('/DanhSachVaiTro')
+	.get(isAuthAdmin, adminController.DanhSachVaiTro)
 
 module.exports = router;

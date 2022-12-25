@@ -102,7 +102,8 @@ async function DanhSachHocSinh() {
     try {
             let SQLQuery = `SELECT DISTINCT HS.MaHS, HS.HoTen, HS.GioiTinh,HS.NgSinh,L.TenLop, HS.Email, HS.DiaChi
             FROM HOCSINH HS, LOP L, HOCSINH_LOP HS_L
-            WHERE HS.MaHS = HS_L.MaHS AND HS_L.MaLop = L.MaLop `;
+            WHERE HS.MaHS = HS_L.MaHS AND HS_L.MaLop = L.MaLop 
+            ORDER BY HS.MaHS`;
 
             let result = await TruyVan("Admin", SQLQuery);
             let class_data = result.result.recordset[0];
