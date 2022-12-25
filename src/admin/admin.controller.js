@@ -51,7 +51,7 @@ async function ThemTaiKhoan(req, res, next) {
                 .status(400)
                 .send({
                     statusCode: 400,
-                    message: "Tạo tài khoản không thành công",
+                    message: newUser.error,
                     alert: "Tạo tài khoản không thành công",
                     redirect: '/admin/ThemTaiKhoan'
                 });
@@ -649,3 +649,44 @@ async function ThayDoiQuyDinh(req, res) {
 
 exports.XemQuyDinh = XemQuyDinh;
 exports.ThayDoiQuyDinh = ThayDoiQuyDinh;
+
+async function XemVaiTro(req, res) { 
+    let result = await adminModel.DanhSachVaiTro();
+    if(result.statusCode === 200) {
+        let html = pug.renderFile('public/admin/ThemvaiTro.pug',{
+            ClassDataList:  result.result.recordset,
+            user: {
+                HoTen: req.user.result.HoTen,
+            }, role: req.user.role
+        });
+        res.send(html);
+    } else {
+        let html = pug.renderFile('public/404.pug', { 
+            message: result.message,
+            redirect: 'public/Home.pug'
+        });
+        res.send(html);
+    }
+}
+
+async function ThemVaiTro(req, res) {
+    let result = await adminModel.ThemVaiTro(req.body);
+    if(result.statusCode === 200) 
+        return res
+            .status(200)
+            .send({
+                statusCode: 200,
+                message: 'Thêm vai trò thành công',
+                data: result.result
+            });
+    else 
+        return res
+            .status(400)
+            .send({
+                statusCode: 400,
+                message: 'Thêm vai trò không thành công',
+            });
+}
+
+exports.XemVaiTro = XemVaiTro;
+exports.ThemVaiTro = ThemVaiTro;

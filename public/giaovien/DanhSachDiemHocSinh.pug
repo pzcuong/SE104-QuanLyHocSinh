@@ -1,0 +1,98 @@
+extends ../header.pug
+
+block title
+    title Quản Lý Báo Cáo Học Sinh
+
+block append css
+    link(rel='stylesheet' href='/public/source/css/students.css  ')
+    link(rel='stylesheet' href='/public/source/css/edit-student.css ')
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              h3.page-title Quản Lý Học Sinh
+        // Start: Search Bar
+        .student-group-form
+          .search-group
+            .submit-form-student.submit
+              .form-group.local-form
+                select.form-control-edit-btn(required='')
+                  option Khối 10
+                  option Khối 11
+                  option Khối 12
+            .submit-form-student.submit
+              .form-group.local-form
+                select.form-control-edit-btn(required='')
+                  option A1
+                  option A2
+                  option A3
+                  option A4
+            .search-bar
+              .form-group
+                input.form-control(type='text' placeholder='Tìm kiếm ...')
+            .search-student-btn
+              .search-btn
+                button.btn(type='button') Tìm Kiếm
+        // End: Search Bar
+        .student-form
+          .card
+            .card-table
+              .card-body
+                .card-body_body
+                  .Data-Table
+                    .Data-Table-body
+                      .Table-body
+                        table.Table
+                          thead.student-thead
+                            tr.thead(role='row')
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='MaSo')
+                                | Mã Số
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='HoTen')
+                                | Họ Tên
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='Lop')
+                                | Lớp
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='DiemTBHK')
+                                | Trung bình HK 1
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='DiemTBHK2')
+                                | Trung bình HK 2
+
+                          tbody.student-tbody
+                            each user in ClassDataList
+                              - var date = new Date(user.NgSinh).toLocaleDateString();
+                              
+                              tr.odd.table-normal(role='row', id=user.MaHS)
+                                td #{user.MaHS}
+                                td
+                                    a(href='#') #{user.HoTen}
+                                td #{user.TenLop}
+                                td 
+                                  if user.DiemTBHK == null
+                                    span Chưa có điểm
+                                  else
+                                    - var Diem = user.DiemTBHK.toFixed(2)
+                                    if Diem < 5
+                                      span(style="color:red") #{Diem}
+                                    else
+                                      span(style="color:green") #{Diem}
+                                td 
+                                  if user.DiemTBHK2 == null
+                                    span Chưa có điểm
+                                  else
+                                    - var Diem = user.DiemTBHK2.toFixed(2)
+                                    if Diem < 5
+                                      span(style="color:red") #{Diem}
+                                    else
+                                      span(style="color:green") #{Diem}
+
+                    .Data-Table-footer
+
+
+    script(src='/public/source/js/main.js')
+    script(src='/public/source/js/edit-student.js ')
+    script(src='/public/source/js/students.js ')

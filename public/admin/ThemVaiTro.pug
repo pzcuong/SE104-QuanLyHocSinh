@@ -1,0 +1,118 @@
+extends ../header.pug
+
+block title 
+    title Tạo mới vai trò
+
+block append css
+    link(rel='stylesheet' href='/public/source/css/edit-student.css')
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              h3.page-title Tạo mới vai trò trên hệ thống
+        .student-form
+          .card
+            .card-table
+              .card-body
+                form(id="form")
+                  .row
+                    .edit-form(style="width: 100%")
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Tên vai trò
+                            span.login-danger *
+                          input.form-control-edit(required='' type='text' placeholder='Nhập vai trò...' id='TenVaiTro')
+                    
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Học sinh
+                            span.login-danger *
+                          select.form-control-edit(required='' id='HocSinh')
+                            option(value='0') Không có quyền
+                            option(value='1') Chỉ xem
+                            option(value='2') Thêm, sửa, xóa
+
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Lớp
+                            span.login-danger *
+                          select.form-control-edit(required='' id='Lop')
+                            option(value='0') Không có quyền
+                            option(value='1') Chỉ xem
+                            option(value='2') Thêm, sửa, xóa
+
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Môn học
+                            span.login-danger *
+                          select.form-control-edit(required='' id='MonHoc')
+                            option(value='0') Không có quyền
+                            option(value='1') Chỉ xem
+                            option(value='2') Thêm, sửa, xóa
+
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Giáo viên
+                            span.login-danger *
+                          select.form-control-edit(required='' id='GiaoVien')
+                            option(value='0') Không có quyền
+                            option(value='1') Chỉ xem
+                            option(value='2') Thêm, sửa, xóa
+
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Thông báo
+                            span.login-danger *
+                          select.form-control-edit(required='' id='ThongBao')
+                            option(value='0') Không có quyền
+                            option(value='1') Chỉ xem
+                            option(value='2') Thêm, sửa, xóa
+                      
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Quy định
+                            span.login-danger *
+                          select.form-control-edit(required='' id='QuyDinh')
+                            option(value='0') Không có quyền
+                            option(value='1') Chỉ xem
+                            option(value='2') Thêm, sửa, xóa
+
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Báo cáo
+                            span.login-danger *
+                          select.form-control-edit(required='' id='BaoCao')
+                            option(value='0') Không có quyền
+                            option(value='1') Chỉ xem
+
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Thêm vai trò người dùng
+                            span.login-danger *
+                          select.form-control-edit(required='' id='ThemVaiTro')
+                            option(value='0') Không có quyền
+                            option(value='1') Chỉ xem
+                            option(value='2') Thêm, sửa, xóa
+
+                  .student-image-submit
+                    .image-submit
+                      a.search-btn.btn#btnSave(onsubmit="ThemVaiTro(); return false" onclick="ThemVaiTro(); return false;") 
+                        | Xác nhận
+
+    script(src='/public/source/js/main.js')
+    script(src='/public/source/js/ThemTaiKhoan.js')

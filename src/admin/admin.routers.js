@@ -7,30 +7,30 @@ const authController = require('../auth/auth.controller');
 const isAuth = authMiddleware.isAuth;
 const isAuthAdmin = authMiddleware.isAuthAdmin;
 const adminController = require('../admin/admin.controller');
- 
 
-router.route('/ThemTaiKhoan' )
-.get(isAuthAdmin, (req, res) => {
-	// console.log(req.user);
-    let html = pug.renderFile('public/admin/ThemTaiKhoan.pug', {
-		user: req.user.result,
-		image: req.image,
-		role: req.user.role
-	});
-    res.send(html);
-})
-.post(isAuthAdmin,adminController.ThemTaiKhoan)
+
+router.route('/ThemTaiKhoan')
+	.get(isAuthAdmin, (req, res) => {
+		// console.log(req.user);
+		let html = pug.renderFile('public/admin/ThemTaiKhoan.pug', {
+			user: req.user.result,
+			image: req.image,
+			role: req.user.role
+		});
+		res.send(html);
+	})
+	.post(isAuthAdmin, adminController.ThemTaiKhoan)
 
 router.route('/ThemLopHoc')
-.get(isAuthAdmin, (req, res) => {
-    let html = pug.renderFile('public/admin/ThemLopHoc.pug', {
-		user: req.user.result,
-		image: req.image,
-		role: req.user.role
-	});
-    res.send(html);
-})
-.post(isAuthAdmin,adminController.ThemLopHoc)
+	.get(isAuthAdmin, (req, res) => {
+		let html = pug.renderFile('public/admin/ThemLopHoc.pug', {
+			user: req.user.result,
+			image: req.image,
+			role: req.user.role
+		});
+		res.send(html);
+	})
+	.post(isAuthAdmin, adminController.ThemLopHoc)
 
 
 router.route('/DanhSachHocSinh')
@@ -45,14 +45,14 @@ router.route('/DanhSachBaiDang')
 router.route('/ThemHocSinh')
 	.get(isAuthAdmin, (req, res) => {
 		let html = pug.renderFile('public/admin/ThemHocSinhVaoLop.pug');
-    	res.send(html)
+		res.send(html)
 	})
 	.post(isAuthAdmin, adminController.ThemHocSinhVaoLop);
 
 router.route('/ThemGiaoVien')
 	.get(isAuthAdmin, (req, res) => {
 		let html = pug.renderFile('public/admin/ThemGiaoVienVaoLop.pug');
-    	res.send(html)
+		res.send(html)
 	})
 	.post(isAuthAdmin, adminController.ThemGiaoVienVaoLop);
 
@@ -65,10 +65,10 @@ router.route('/ThemBaiDang')
 		});
 		res.send(html);
 	})
-	.post(isAuthAdmin,adminController.ThemBaiDang)
+	.post(isAuthAdmin, adminController.ThemBaiDang)
 
 router.route('/XoaBaiDang')
-	.post(isAuthAdmin,adminController.XoaBaiDang)
+	.post(isAuthAdmin, adminController.XoaBaiDang)
 
 router.post('/ThongTinNguoiDung', isAuthAdmin, adminController.ThongTinNguoiDung);
 
@@ -88,16 +88,28 @@ router.route('/DanhSachLopHoc')
 	.post(isAuthAdmin, adminController.XemThongTinLop);
 
 router.route('/XoaHocSinh')
-	.post(isAuthAdmin,adminController.XoaHocSinh)
+	.post(isAuthAdmin, adminController.XoaHocSinh)
 
 router.route('/XoaLopHoc')
-	.post(isAuthAdmin,adminController.XoaLopHoc)
+	.post(isAuthAdmin, adminController.XoaLopHoc)
 
 router.route('/XoaGiaoVien')
-	.post(isAuthAdmin,adminController.XoaGiaoVien)
+	.post(isAuthAdmin, adminController.XoaGiaoVien)
 
 router.route('/QuyDinh')
 	.get(isAuthAdmin, adminController.XemQuyDinh)
-	.post(isAuthAdmin,adminController.ThayDoiQuyDinh)
+	.post(isAuthAdmin, adminController.ThayDoiQuyDinh)
+
+router.route('/ThemVaiTro')
+	.get(isAuthAdmin, (req, res) => {
+		let html = pug.renderFile('public/admin/ThemVaiTro.pug', {
+			user: req.user.result,
+			image: req.image,
+			role: req.user.role
+		});
+		res.send(html);
+	})
+	.post(isAuthAdmin, adminController.ThemVaiTro)
+
 
 module.exports = router;
