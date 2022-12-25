@@ -197,11 +197,13 @@ html(lang='vi')
             div
                 button.dropdown-btn
                   i#icon_sn.fa-solid.fa-user-plus
-                  span.link_name(onclick="window.location.href='/admin/VaiTro';") Thêm mới vai trò
-                //-   i#drop.fas.fa-angle-right
-                //- .dropdown-container
-                //-   a.link_name(href='#') Báo Cáo
-                //-   .nbar-sub
-                //-     a(href='/user/DanhSachDiemHocSinh') Danh sách điểm học sinh
+                  span.link_name() Vai trò
+                  i#drop.fas.fa-angle-right
+                .dropdown-container
+                  a.link_name(href='#') Vai trò
+                  .nbar-sub
+                    a(href='/admin/DanhSachVaiTro') Danh sách vai trò
+                  .nbar-sub
+                    a(href='/admin/ThemVaiTro') Thêm vai trò
 
     block content

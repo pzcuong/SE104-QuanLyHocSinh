@@ -650,11 +650,11 @@ async function ThayDoiQuyDinh(req, res) {
 exports.XemQuyDinh = XemQuyDinh;
 exports.ThayDoiQuyDinh = ThayDoiQuyDinh;
 
-async function XemVaiTro(req, res) { 
+async function DanhSachVaiTro(req, res) { 
     let result = await adminModel.DanhSachVaiTro();
     if(result.statusCode === 200) {
-        let html = pug.renderFile('public/admin/ThemvaiTro.pug',{
-            ClassDataList:  result.result.recordset,
+        let html = pug.renderFile('public/admin/DanhSachVaiTro.pug',{
+            RoleDataList:  result.result.recordset,
             user: {
                 HoTen: req.user.result.HoTen,
             }, role: req.user.role
@@ -688,5 +688,5 @@ async function ThemVaiTro(req, res) {
             });
 }
 
-exports.XemVaiTro = XemVaiTro;
+exports.DanhSachVaiTro = DanhSachVaiTro;
 exports.ThemVaiTro = ThemVaiTro;
