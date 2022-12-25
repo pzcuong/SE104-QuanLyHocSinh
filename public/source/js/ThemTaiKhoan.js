@@ -13,6 +13,7 @@ async function ThemTaiKhoan() {
       Email: form.querySelector("input[id=Email]").value,
       DiaChi: form.querySelector("input[id=DiaChi]").value,
       Role: form.querySelector("select[id=Role]").value,
+      MaLop: form.querySelector("input[id=MaLop]").value,
     }
     console.log(data)
     let response = await fetch('/admin/ThemTaiKhoan', {
@@ -32,3 +33,30 @@ async function ThemTaiKhoan() {
     document.getElementById("body-wrapper").style.filter = "blur(0px)";
     
   }
+
+async function ThemVaiTro() {
+    form = document.querySelector("#form");
+    data = {
+        TenVaiTro: form.querySelector("input[id=TenVaiTro]").value,
+        HocSinh: form.querySelector("select[id=HocSinh]").value,
+        Lop: form.querySelector("select[id=Lop]").value,
+        MonHoc: form.querySelector("select[id=MonHoc]").value,
+        GiaoVien: form.querySelector("select[id=GiaoVien]").value,
+        ThongBao: form.querySelector("select[id=ThongBao]").value,
+        QuyDinh: form.querySelector("select[id=QuyDinh]").value,
+        BaoCao: form.querySelector("select[id=BaoCao]").value,
+        ThemVaiTro: form.querySelector("select[id=ThemVaiTro]").value,
+    }
+    console.log(data)
+    let response = await fetch('/admin/ThemVaiTro', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+        json: true
+    })
+
+    let text = await response.json();
+    alert(text.message);
+}

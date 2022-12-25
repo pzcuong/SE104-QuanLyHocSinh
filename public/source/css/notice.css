@@ -296,7 +296,7 @@ body {
   display: inline-block;
   font-size: 22px;
   color: #3d5ee1;
-  margin-left: 10px;
+  /* margin-left: 10px; */
 }
 .content-head i {
   color: red;

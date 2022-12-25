@@ -94,7 +94,7 @@ async function NhapDiem(req, res) {
     let MaMH = req.body.MaMH;
     let MaLop = req.params.MaLop;
 
-    let result = await usersModel.NhapDiem(MaMH, req.body.Diem);
+    let result = await usersModel.NhapDiem(MaMH, req.body.Diem, req.body.HocKy);
     if(result.statusCode === 200) {
         return res.json({
             statusCode: 200,
@@ -332,7 +332,7 @@ async function BaoCaoMonHoc(req, res) {
         HocKy: req.body.HocKy,
         NamHoc: req.body.NamHoc
     }
-    let result = await usersModel.BaoCaoMonHoc(MaMH, data);
+    let result = await usersModel.BaoCaoMonHoc(req.user.role, data);
     console.log(result.result)
     if(result.statusCode === 200) {
         return res.json({
@@ -371,6 +371,68 @@ async function DanhSachHocSinhTrongLopTheoMaLop(req, res) {
     }
 }
 
+async function BaoCaoHocKy(req, res) {
+    let DanhSachNamHoc;
+    console.log(req.body)
+    req.MaLop = req.params.MaLop;
+
+    if(!req.body.NamHoc) {
+        DanhSachNamHoc = await usersModel.DanhSachNamHoc();
+        req.body.NamHoc = DanhSachNamHoc.result.recordsets[0][0].NamHoc;
+        return res.json({
+            statusCode: 200,
+            message: 'Lấy danh sách năm học thành công',
+            result: DanhSachNamHoc.result.recordsets[0]
+        });
+    }
+
+    let MaMH = req.body.MaMH;
+    let data = {
+        MaGV: req.user.result.MaGV,
+        HocKy: req.body.HocKy,
+        NamHoc: req.body.NamHoc
+    }
+
+    let result = await usersModel.BaoCaoHocKy(MaMH, data);
+    console.log(result.result)
+    if(result.statusCode === 200) {
+        return res.json({
+            statusCode: 200,
+            message: 'Lấy báo cáo thành công',
+            result: result.result.recordsets
+        });
+    } else {
+        return res.json({
+            statusCode: 500,
+            message: 'Lấy báo cáo thất bại',
+        })
+    }
+
+}
+
+exports.BaoCaoHocKy = BaoCaoHocKy;
 exports.BaoCaoMonHoc = BaoCaoMonHoc;
 exports.DanhSachHocSinhTrongLopTheoMaLop = DanhSachHocSinhTrongLopTheoMaLop;
 exports.DanhSachLopHocTheoGVDeNhapDiem = DanhSachLopHocTheoGVDeNhapDiem;
+
+async function DanhSachDiemHocSinh(req, res) {
+    let result = await usersModel.DanhSachDiemHocSinh();
+
+    if(result.statusCode === 200) {
+        let html = pug.renderFile('public/giaovien/DanhSachDiemHocSinh.pug',{
+            ClassDataList:  result.result,
+            user: {
+                HoTen: req.user.result.HoTen,
+            }, role: req.user.role
+        });
+        res.send(html);
+    } else {
+        return res.json({
+            statusCode: 500,
+            message: 'Lấy danh sách học sinh theo mã học sinh thất bại',
+        })
+    }
+}
+
+exports.DanhSachDiemHocSinh = DanhSachDiemHocSinh;
+

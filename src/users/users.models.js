@@ -101,8 +101,9 @@ async function createUser(data, role) {
         if (data.DiaChi == undefined) data.DiaChi = 'NULL';
 
         if (role == 'HocSinh') {
-                SQLQuery_1 = `set dateformat ymd; insert into HOCSINH (MaHS, HoTen, GioiTinh, NgSinh, DiaChi, Email) 
+            SQLQuery_1 = `set dateformat ymd; insert into HOCSINH (MaHS, HoTen, GioiTinh, NgSinh, DiaChi, Email) 
                 values (N'${data.MaND}', N'${data.HoTen}', N'${data.GioiTinh}', '${data.NgSinh}', N'${data.DiaChi}', N'${data.Email}')`;
+            SQLQuery_2 = `insert into HOCSINH_LOP(MaHS, MaLop) Values(N'${data.MaND}', N'${data.MaLop}')`;  
         };
 
         if (role == 'GiaoVien' || role == 'Admin') {
@@ -111,19 +112,32 @@ async function createUser(data, role) {
         }
 
         let result_1 = await TruyVan("Admin", SQLQuery_1);
-        if(result_1.statusCode == 200) {
-            let result = await TruyVan("Admin", SQLQuery);    
 
-            return ({
-                statusCode: 200,
-                message: 'Thành công',
-                result: result.result.rowsAffected[0]
-            })
+        if(result_1.statusCode == 200) {
+            let result_2 = await TruyVan("Admin", SQLQuery_2);
+            if(result_2.statusCode == 200) {
+                return ({
+                    statusCode: 200,
+                    message: 'Thành công',
+                    result: "Thêm thành công!"
+                })
+            } else {
+                let SQLQuery_3 = `delete from HOCSINH where MaHS = '${data.MaND}'`;
+                let result_3 = await TruyVan("Admin", SQLQuery_3);
+                return ({
+                    statusCode: 500,
+                    message: 'Lớp học đã đủ học sinh!',
+                    alert: 'Lớp học đã đủ học sinh!',
+                    error: "Lớp học đã đủ học sinh!"
+                })
+            }
+
         } else {
             return ({
                 statusCode: 500,
                 message: 'Kiểm tra lại thông tin người dùng!',
-                alert: 'Kiểm tra lại thông tin người dùng!'
+                alert: 'Kiểm tra lại thông tin người dùng!',
+                error: "Kiểm tra lại thông tin người dùng!"
             });
         }
 
@@ -385,19 +399,19 @@ async function DanhSachHocSinhTrongLop(MaLop, HocKy, Nam2) {
     }
 }
 
-async function NhapDiem(MaMH, data) {
+async function NhapDiem(MaMH, data, HocKy) {
     try {
         for(let i = 0; i < data.length; i++){
-            let CheckHS = `SELECT * FROM KETQUAHOCMON WHERE MaHS = '${data[i].MSHS}'`;
+            let CheckHS = `SELECT * FROM KETQUAHOCMON WHERE MaHS = '${data[i].MSHS}' AND MaHocKy = 'HK00${HocKy}'`;
             CheckHS = await TruyVan("Admin", CheckHS);
             // console.log(CheckHS)
 
             if(CheckHS.statusCode == 200 && CheckHS.result.recordset.length == 0){
-                let SQLQuery = `INSERT KETQUAHOCMON(MaMH, MaHS) VaLUES ('${MaMH}','${data[i].MSHS}')`;
+                let SQLQuery = `INSERT KETQUAHOCMON(MaMH, MaHS, MaHocKy) VaLUES ('${MaMH}','${data[i].MSHS}','HK00${HocKy}')`;
                 let result = await TruyVan("Admin", SQLQuery);
                 // console.log("Danh sách kết quả học môn", result);
 
-                CheckHS = `SELECT * FROM KETQUAHOCMON WHERE MaHS = '${data[i].MSHS}'`;
+                CheckHS = `SELECT * FROM KETQUAHOCMON WHERE MaHS = '${data[i].MSHS}' AND MaHocKy = 'HK00${HocKy}'`;
                 CheckHS = await TruyVan("Admin", CheckHS);
             }
 
@@ -495,20 +509,21 @@ async function DanhSachDiem(MaMH, MaLop, HocKy, Nam2) {
         //     WHERE MaMH = '${MaMH}'AND L.MaLop = N'${MaLop}' AND HK.HocKy = N'${HocKy}' AND HK.MaNam = N'NH${Nam2}'
         //     GROUP BY KQHM.MaHS, MaLHKT, Diem, L.MaLop, KQHM.DiemTBMon) BD
         // WHERE HS.MaHS = BD.MaHS`;
-        let SQLQuery = `	
-            SELECT HOCSINH.MaHS, HoTen, KQHM.MaLHKT, KQHM.Diem, KQHM.DiemTBMon, LOP.MaLop, TenLop FROM (
-                SELECT MaHS, MaLHKT, Diem, DiemTBMon
-                FROM dbo.KETQUAHOCMON INNER JOIN dbo.CT_HOCMON ON CT_HOCMON.MaQTHoc = KETQUAHOCMON.MaQTHoc
-                WHERE MaMH = '${MaMH}'
-                ) KQHM RIGHT JOIN dbo.HOCSINH ON HOCSINH.MaHS = KQHM.MaHS INNER JOIN dbo.HOCSINH_LOP ON HOCSINH_LOP.MaHS = HOCSINH.MaHS INNER JOIN dbo.LOP ON LOP.MaLop = HOCSINH_LOP.MaLop INNER JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaLop = LOP.MaLop
-            WHERE MaMH = '${MaMH}' AND LOP.MaLop = '${MaLop}'`
-        let result = await TruyVan("Admin", SQLQuery);
-        console.log("Danh sách các điểm", result);
-        return ({
-            statusCode: 200,
-            message: 'Lấy danh sách điểm thành công!',
-            result: result.result.recordset
-        });
+            let SQLQuery = `	
+                SELECT HOCSINH.MaHS, HoTen, KQHM.MaLHKT, KQHM.Diem, KQHM.DiemTBMon, LOP.MaLop, TenLop FROM (
+                    SELECT MaHS, MaLHKT, Diem, DiemTBMon
+                    FROM dbo.KETQUAHOCMON INNER JOIN dbo.CT_HOCMON ON CT_HOCMON.MaQTHoc = KETQUAHOCMON.MaQTHoc
+                    WHERE MaMH = '${MaMH}' AND KETQUAHOCMON.MaHocKy = 'HK00${HocKy}'
+                    ) KQHM RIGHT JOIN dbo.HOCSINH ON HOCSINH.MaHS = KQHM.MaHS INNER JOIN dbo.HOCSINH_LOP ON HOCSINH_LOP.MaHS = HOCSINH.MaHS INNER JOIN dbo.LOP ON LOP.MaLop = HOCSINH_LOP.MaLop INNER JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaLop = LOP.MaLop
+                WHERE MaMH = '${MaMH}' AND LOP.MaLop = '${MaLop}'`
+            let result = await TruyVan("Admin", SQLQuery);
+            console.log("Danh sách các điểm", result);
+            return ({
+                statusCode: 200,
+                message: 'Lấy danh sách điểm thành công!',
+                result: result.result.recordset
+            });
+        
     } catch (err) {
         console.log(err);
         return ({
@@ -608,11 +623,32 @@ async function DanhSachHocSinhTheoMaHS(MaHS) {
     }
 }
 
+async function DanhSachDiemHocSinh() {
+    try {
+        let SQLQuery = `SELECT DISTINCT HOCSINH.MaHS, HoTen, TenLop, DiemTBHK, DiemTBHK2 
+        FROM dbo.HOCSINH_LOP INNER JOIN dbo.HOCSINH ON HOCSINH.MaHS = HOCSINH_LOP.MaHS INNER JOIN LOP ON LOP.MaLop = HOCSINH_LOP.MaLop`;
+        let result = await TruyVan("Admin", SQLQuery);
+        console.log("Thông tin điểm học sinh", result);
+        return ({
+            statusCode: 200,
+            message: 'Lấy thông tin điểm học sinh thành công!',
+            result: result.result.recordset
+        });
+    } catch (err) {
+        console.log(err);
+        return ({
+            statusCode: 400,
+            message: 'Lỗi truy vấn SQL!',
+            alert: 'Kiểm tra lại câu lệnh SQL!'
+        });
+    }
+}
+
 async function TinhDiemTrungBinh(MaLop) {
     let SQLQuery = `SELECT MaLop, KETQUAHOCMON.MaMH, MaHS, [dbo].TINH_DIEMTB(CT_HOCMON.MaQTHoc) AS DiemTB
         FROM dbo.CT_HOCMON INNER JOIN dbo.KETQUAHOCMON ON KETQUAHOCMON.MaQTHoc = CT_HOCMON.MaQTHoc INNER JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaMH = KETQUAHOCMON.MaMH
         WHERE MaLop = '${MaLop}'
-        GROUP BY CT_HOCMON.MaQTHoc, MaLop, KETQUAHOCMON.MaMH, MaHS;
+        GROUP BY CT_HOCMON.MaQTHoc, MaLop, KETQUAHOCMON.MaMH, MaHS, MaHocKy;
 
         EXEC [dbo].[LUU_DIEMTB];
     `
@@ -661,29 +697,71 @@ async function BaoCaoMonHoc(Role, data) {
     try {
         let result;
         if (Role == "GiaoVien") {
-            let SQLQuery = `SELECT DISTINCT TenLop, SiSo, SoLuongDat, TiLe
-            FROM dbo.BAOCAOMONHOC 
-                RIGHT JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaMH = BAOCAOMONHOC.MaMH AND LOP_MONHOC.MaLop = BAOCAOMONHOC.MaLop
-                INNER JOIN dbo.LOP ON LOP.MaLop = LOP_MONHOC.MaLop 
-                INNER JOIN dbo.HOCKY ON HOCKY.MaHocKy = LOP.MaHocKy
-            WHERE MaGV = '${data.MaGV}' AND LOP_MONHOC.MaMH = '${data.MaMH}' AND HocKy = '${data.HocKy}' AND MaNam = 'NH${data.NamHoc}'
+            let SQLQuery = `DECLARE @DiemDatMon FLOAT;
+            SELECT @DiemDatMon = GiaTri FROM dbo.THAMSO WHERE TenThamSo = 'DiemDatMon';
+            SELECT DISTINCT LOP.MaHocKy, TenLop, KETQUAHOCMON.MaMH, COUNT(DISTINCT DiemTBMon) AS SoLuongDat, SiSo
+            FROM dbo.KETQUAHOCMON INNER JOIN dbo.HOCSINH_LOP ON HOCSINH_LOP.MaHS = KETQUAHOCMON.MaHS INNER JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaMH = KETQUAHOCMON.MaMH AND LOP_MONHOC.MaLop = HOCSINH_LOP.MaLop INNER JOIN LOP ON LOP.MaHocKy = KETQUAHOCMON.MaHocKy AND LOP.MaLop = HOCSINH_LOP.MaLop INNER JOIN dbo.HOCKY ON HOCKY.MaHocKy = LOP.MaHocKy AND HOCKY.MaHocKy = KETQUAHOCMON.MaHocKy
+            WHERE DiemTBMon IS NOT NULL AND SiSo IS NOT NULL AND DiemTBMon >= @DiemDatMon AND MaGV = '${data.MaGV}' AND LOP_MONHOC.MaMH = '${data.MaMH}' AND LOP.MaHocKy='HK00${data.HocKy}' AND MaNam = 'NH${data.NamHoc}'
+            GROUP BY KETQUAHOCMON.MaMH, LOP.MaHocKy, HOCSINH_LOP.MaLop, TenLop, SiSo
             `;
+            console.log(SQLQuery)
             result = await TruyVan("Admin", SQLQuery);
             console.log("Báo cáo môn học", result);
             return result;
         } else {
-            let SQLQuery = `SELECT DISTINCT TenLop, SiSo, SoLuongDat, TiLe
-            FROM dbo.BAOCAOMONHOC 
-                RIGHT JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaMH = BAOCAOMONHOC.MaMH AND LOP_MONHOC.MaLop = BAOCAOMONHOC.MaLop
-                INNER JOIN dbo.LOP ON LOP.MaLop = LOP_MONHOC.MaLop 
-                INNER JOIN dbo.HOCKY ON HOCKY.MaHocKy = LOP.MaHocKy
-            WHERE LOP_MONHOC.MaMH = '${data.MaMH}' AND HocKy = '${data.HocKy}' AND MaNam = 'NH${data.NamHoc}'
+            let SQLQuery = `DECLARE @DiemDatMon FLOAT;
+            SELECT @DiemDatMon = GiaTri FROM dbo.THAMSO WHERE TenThamSo = 'DiemDatMon';
+            SELECT DISTINCT LOP.MaHocKy, TenLop, KETQUAHOCMON.MaMH, COUNT(DISTINCT DiemTBMon) AS SoLuongDat, SiSo
+            FROM dbo.KETQUAHOCMON INNER JOIN dbo.HOCSINH_LOP ON HOCSINH_LOP.MaHS = KETQUAHOCMON.MaHS INNER JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaMH = KETQUAHOCMON.MaMH AND LOP_MONHOC.MaLop = HOCSINH_LOP.MaLop INNER JOIN LOP ON LOP.MaHocKy = KETQUAHOCMON.MaHocKy AND LOP.MaLop = HOCSINH_LOP.MaLop INNER JOIN dbo.HOCKY ON HOCKY.MaHocKy = LOP.MaHocKy AND HOCKY.MaHocKy = KETQUAHOCMON.MaHocKy
+            WHERE DiemTBMon IS NOT NULL AND SiSo IS NOT NULL AND DiemTBMon >= @DiemDatMon AND LOP_MONHOC.MaMH = '${data.MaMH}' AND LOP.MaHocKy='HK00${data.HocKy}' AND MaNam = 'NH${data.NamHoc}'
+            GROUP BY KETQUAHOCMON.MaMH, LOP.MaHocKy, HOCSINH_LOP.MaLop, TenLop, SiSo
             `;
             console.log("SQLQuery", SQLQuery)
             result = await TruyVan("Admin", SQLQuery);
             console.log("Báo cáo môn học", result);
             return result;
         }
+    } catch (err) {
+        console.log(err);
+        return ({
+            statusCode: 400,
+            message: 'Lỗi truy vấn SQL!',
+            alert: 'Kiểm tra lại câu lệnh SQL!'
+        });
+    }
+}
+
+async function BaoCaoHocKy(Role, data) {
+    try {
+        let result;
+        // if (Role == "GiaoVien") {
+            let variable_name;
+            if(data.HocKy == 1)
+                variable_name = "DiemTBHK";
+            else
+                variable_name = "DiemTBHK2";
+
+            let SQLQuery = `DECLARE @DiemDat FLOAT;
+            SELECT @DiemDat = GiaTri FROM dbo.THAMSO WHERE TenThamSo = 'DiemDat';
+            SELECT DISTINCT LOP.MaHocKy, TenLop, COUNT(DISTINCT DiemTBHK)AS SoLuongDat, SiSo
+            FROM dbo.KETQUAHOCMON INNER JOIN dbo.HOCSINH_LOP ON HOCSINH_LOP.MaHS = KETQUAHOCMON.MaHS INNER JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaLop = HOCSINH_LOP.MaLop AND LOP_MONHOC.MaMH = KETQUAHOCMON.MaMH INNER JOIN dbo.LOP ON LOP.MaLop = HOCSINH_LOP.MaLop AND LOP.MaLop = LOP_MONHOC.MaLop AND LOP.MaHocKy = KETQUAHOCMON.MaHocKy INNER JOIN dbo.HOCKY ON HOCKY.MaHocKy = KETQUAHOCMON.MaHocKy AND HOCKY.MaHocKy = LOP.MaHocKy
+            WHERE DiemTBHK IS NOT NULL AND LOP.MaHocKy = 'HK00${data.HocKy}' AND ${variable_name} > @DiemDat AND MaNam = 'NH${data.NamHoc}'
+            GROUP BY LOP.MaHocKy, LOP.MaLop, TenLop, SiSo
+            `;
+            console.log(SQLQuery)
+            result = await TruyVan("Admin", SQLQuery);
+            console.log("Báo cáo học kỳ", result);
+            return result;
+        // } else {
+        //     let SQLQuery = `SELECT TenLop, SiSo, SoLuongDat, TiLe
+        //     FROM dbo.BAOCAOHOCKY INNER JOIN LOP ON LOP.MaHocKy = BAOCAOHOCKY.MaHocKy AND LOP.MaLop = BAOCAOHOCKY.MaLop INNER JOIN dbo.HOCKY ON HOCKY.MaHocKy = BAOCAOHOCKY.MaHocKy AND HOCKY.MaHocKy = LOP.MaHocKy
+        //     WHERE HocKy = '${data.HocKy}' AND MaNam = 'NH${data.NamHoc}'
+        //     `;
+        //     console.log("SQLQuery", SQLQuery)
+        //     result = await TruyVan("Admin", SQLQuery);
+        //     console.log("Báo cáo học kỳ", result);
+        //     return result;
+        // }
     } catch (err) {
         console.log(err);
         return ({
@@ -763,3 +841,5 @@ exports.DanhSachLopHocTheoGV = DanhSachLopHocTheoGV;
 exports.DanhSachHocSinhTrongLopTheoMaLop = DanhSachHocSinhTrongLopTheoMaLop;
 exports.XemBaoCaoDanhSachMH = XemBaoCaoDanhSachMH;
 exports.BaoCaoMonHoc = BaoCaoMonHoc;
+exports.BaoCaoHocKy = BaoCaoHocKy;
+exports.DanhSachDiemHocSinh = DanhSachDiemHocSinh;

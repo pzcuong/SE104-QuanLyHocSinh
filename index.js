@@ -32,7 +32,7 @@ app.use('/user', userRoute);
 app.use('/admin', adminRoute);
  
 app.get('/', (req, res) => {
-    res.redirect('/auth/login');
+    res.sendFile(__dirname + '/public/index.html');
 });
 
 app.use((req, res, next) => {

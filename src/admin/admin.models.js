@@ -100,7 +100,7 @@ async function ThemLopHoc(data) {
 
 async function DanhSachHocSinh() {
     try {
-            let SQLQuery = `SELECT HS.MaHS, HS.HoTen, HS.GioiTinh,HS.NgSinh,L.TenLop, HS.Email, HS.DiaChi
+            let SQLQuery = `SELECT DISTINCT HS.MaHS, HS.HoTen, HS.GioiTinh,HS.NgSinh,L.TenLop, HS.Email, HS.DiaChi
             FROM HOCSINH HS, LOP L, HOCSINH_LOP HS_L
             WHERE HS.MaHS = HS_L.MaHS AND HS_L.MaLop = L.MaLop `;
 
@@ -238,7 +238,7 @@ async function ThayDoiThongTin(data, table) {
 
 async function DanhSachLopHoc() {
     try {
-            let SQLQuery = `SELECT * FROM LOP`;
+            let SQLQuery = `SELECT * FROM LOP WHERE SiSo IS NOT NULL`;
 
             let result = await TruyVan("Admin", SQLQuery);
             let class_data = result.result.recordset[0];
@@ -247,6 +247,25 @@ async function DanhSachLopHoc() {
 
     } catch (err) {
         console.log("Lỗi DanhSachLopHoc (admin.models)", err);
+        return ({
+            statusCode: 500,
+            message: 'Lỗi hệ thống!',
+            alert: 'Lỗi hệ thống'
+        });
+    }
+}
+
+async function DanhSachVaiTro() {
+    try {
+            let SQLQuery = `SELECT * FROM VAITRO`;
+
+            let result = await TruyVan("Admin", SQLQuery);
+            let class_data = result.result.recordset[0];
+            console.log(result);
+            return result;
+
+    } catch (err) {
+        console.log("Lỗi DanhSachVaiTro (admin.models)", err);
         return ({
             statusCode: 500,
             message: 'Lỗi hệ thống!',
@@ -342,6 +361,24 @@ exports.DanhSachLopHoc = DanhSachLopHoc;
 exports.DanhSachGiaoVien = DanhSachGiaoVien;
 exports.DanhSachBaiDang = DanhSachBaiDang;
 exports.XoaBaiDang = XoaBaiDang;
+exports.DanhSachVaiTro = DanhSachVaiTro;
+
+async function ThemVaiTro(data) {
+    try {
+        let SQLQuery = `insert into VAITRO(TenVaiTro, HocSinh, Lop, MonHoc, GiaoVien, ThongBao, QuyDinh, BaoCao, ThemVaiTro) 
+        values (N'${data.TenVaiTro}', N'${data.HocSinh}', N'${data.Lop}', N'${data.MonHoc}', N'${data.GiaoVien}', N'${data.ThongBao}', N'${data.QuyDinh}', N'${data.BaoCao}', N'${data.ThemVaiTro}')`;
+        let result = await TruyVan("Admin", SQLQuery);
+        console.log(result);
+        return result;
+    } catch(err) {
+        console.log(err);
+        return ({ 
+            statusCode: 400,
+            message: 'Lỗi truy vấn SQL!',
+            alert: 'Kiểm tra lại câu lệnh SQL!'
+        });
+    }
+}
 
 async function XemQuyDinh() {
     try {
@@ -377,3 +414,4 @@ async function ThayDoiQuyDinh(data) {
 
 exports.XemQuyDinh = XemQuyDinh;
 exports.ThayDoiQuyDinh = ThayDoiQuyDinh;
+exports.ThemVaiTro = ThemVaiTro;

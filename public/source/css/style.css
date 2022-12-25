@@ -26,6 +26,10 @@ body {
   width: 78px;
 }
 .sidebar .logo-details {
+  top: 0;
+  position: sticky;
+  background: white;
+  z-index: 10;
   height: 60px;
   width: 100%;
   display: flex;
@@ -356,3 +360,12 @@ body {
   color: #fff;
 }
 /* Nhap diem */
+
+.sidebar {
+  overflow:   scroll;
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* make scrollbar transparent */
+}

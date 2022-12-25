@@ -85,7 +85,22 @@ router.route('/BaoCaoMonHoc')
 		})
 	.post(isAuthGiaoVien, userController.BaoCaoMonHoc);
 
+router.route('/BaoCaoHocKy')
+	.get(isAuthGiaoVien, (req, res) => {
+		let html = pug.renderFile('public/giaovien/BaoCaoHocKy.pug', {
+			user: req.user.result,
+			image: req.image,
+			role: req.user.role
+			});
+			res.send(html);
+		})
+	.post(isAuthGiaoVien, userController.BaoCaoHocKy);
+
 router.route('/DanhSachHocSinhTrongLop/:MaLop/')
 	.get(isAuthGiaoVien, userController.DanhSachHocSinhTrongLopTheoMaLop);
+
+router.route('/DanhSachDiemHocSinh')
+	.get(authMiddleware.isAuthGiaoVien, userController.DanhSachDiemHocSinh);
+
 
 module.exports = router;
