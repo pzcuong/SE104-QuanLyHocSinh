@@ -1,0 +1,179 @@
+extends ../header.pug
+
+block title
+  title Thêm môn học vào lớp #{DanhSachMonHocTrongLop[0].TenLop} 
+
+block append script
+  script(src='https://kit.fontawesome.com/7b85820244.js' crossorigin='anonymous')
+
+block append css
+  link(rel='stylesheet' href='/public/source/css/classroom.css  ')
+  link(rel='stylesheet' href='/public/source/css/edit-classroom.css ')
+  link(rel='stylesheet' href='/public/source/css/notice.css')
+  link(rel='stylesheet' href='/public/source/fonts/fontawesome-free-6.2.0-web/css/all.css')
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              h3(style="margin-bottom: 10px;")
+                | Thêm Môn Học Vào Lớp #{DanhSachMonHocTrongLop[0].TenLop}
+            
+        .student-form
+          .card
+            .card-table
+              .card-body
+                .card-body_body
+                  .Data-Table
+                    .Data-Table-body
+                      .Table-body
+                        table.Table
+                          thead.student-thead
+                            tr.thead(role='row')
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='STT')
+                                | Đăng ký
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='STT')
+                                | Mã môn học
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='HoTen')
+                                | Tên môn học
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='GioiTinh')
+                                | Mô tả
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='NgSinh')
+                                | Hệ số
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='NgSinh')
+                                | Giáo viên dạy
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='GhiChu')
+                                | Ghi chú
+
+                          tbody.student-tbody
+                            - var STT = 1;
+                            each MonHoc in DanhSachMonHoc
+                                tr.odd.table-normal(role='row')
+                                    td
+                                        - DanhSach = JSON.stringify(DanhSachMonHocTrongLop)
+                                        if (DanhSach.includes(MonHoc.MaMH))
+                                            input(type='checkbox' name='check' value=MonHoc.MaMH checked)
+                                        else
+                                            input(type='checkbox' name='check' value=MonHoc.MaMH)
+
+                                    td #{MonHoc.MaMH}
+                                    td #{MonHoc.TenMH}
+                                    td #{MonHoc.MoTa}
+                                    td #{MonHoc.HeSo}
+                                    td 
+                                        select(name='GiaoVien' id=MonHoc.MaMH style='width: 100%; height: 30px;')
+                                            option(value='0' selected disabled hidden) Chọn giáo viên
+                                            each GiaoVien in DanhSachGiaoVien
+                                                if (MonHoc.MaGV == GiaoVien.MaGV)
+                                                    option(value=GiaoVien.MaGV selected) #{GiaoVien.HoTen}
+                                                else
+                                                    option(value=GiaoVien.MaGV) #{GiaoVien.HoTen}                                            
+
+                    .Data-Table-footer
+        a.search-btn.btn#btnSave(onclick="ThemMonHoc(); return false;" style="margin-top: 10px; margin-bottom: 10px;") 
+            | Thêm môn học vào lớp
+
+    script(src='/public/source/js/main.js')
+    script(src='/public/source/js/edit-student.js ')
+    //- script(src='/public/source/js/students.js ')
+    script.
+      async function LayThongTin() {
+        //Disable button
+        //- document.getElementById("GetData").disabled = true;
+        //- document.getElementById("GetData").innerHTML = "Đang tải...";
+
+        data = {
+          HocKy: document.getElementById("HocKy").value,
+          NamHoc: document.getElementById("NamHoc").value,
+          MaLop: document.getElementById("Lop").value,
+          DanhSachHocSinh: []
+        }
+
+        // Get all checked checkboxes
+        let checkboxes = document.querySelectorAll('input[name="check"]:checked').forEach(checkbox => {
+          data.DanhSachHocSinh.push(checkbox.value)
+        });
+        
+        let url = window.location.href;
+
+        let response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          json: true
+        })
+
+        let result = await response.json();
+
+        console.log(result)
+
+        //Enable button
+        //- document.getElementById("GetData").disabled = false;
+        //- document.getElementById("GetData").innerHTML = "Lấy thông tin";
+
+        if(data.NamHoc == null || data.NamHoc == "") {
+          let SelectNamHoc = document.getElementById("NamHoc");
+          for (let i = 0; i < result.result.length; i++) {
+            let option = document.createElement("option");
+            option.text = `${result.result[i].Nam1} - ${result.result[i].Nam2}` ;
+            option.value = result.result[i].Nam2;
+            SelectNamHoc.add(option);
+          }
+          return false;
+        }
+
+        if(data.MaLop == null || data.MaLop == "") {
+          let SelectLop = document.getElementById("Lop");
+          console.log(result.result)
+          for (let i = 0; i < result.result.recordset.length; i++) {
+            let option = document.createElement("option");
+            option.text = `${result.result.recordset[i].MaLop} - ${result.result.recordset[i].TenLop}` ;
+            option.value = result.result.recordset[i].MaLop;
+            SelectLop.add(option);
+          }
+          return false;
+        }
+      }
+
+      async function ThemMonHoc() {
+        //Disable button
+        //- document.getElementById("GetData").disabled = true;
+        //- document.getElementById("GetData").innerHTML = "Đang tải...";
+
+        data = {
+          DanhSachMonHoc: []
+        }
+
+        // Get all checked checkboxes
+        let checkboxes = document.querySelectorAll('input[name="check"]:checked').forEach(checkbox => {
+          data.DanhSachMonHoc.push(checkbox.value)
+        });
+
+        if (data.DanhSachMonHoc.length == 0) {
+          alert("Vui lòng chọn môn học để thêm vào lớp!")
+          return false;
+        }
+        
+        let url = window.location.href;
+
+        let response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          json: true
+        })
+
+        let result = await response.json();
+
+        console.log(result)
+        alert(result.message)
+      }

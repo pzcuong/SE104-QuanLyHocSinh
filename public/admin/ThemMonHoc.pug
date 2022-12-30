@@ -1,0 +1,88 @@
+extends ../header.pug
+
+block title
+  title Thêm Lớp Học
+
+block append css
+    link(rel='stylesheet' href='/public/source/css/edit-classroom.css')
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              h3.page-title Thêm Môn Học
+        .student-form
+          .card
+            .card-table
+              .card-body
+                form(id="formElem" method="dialog")
+                  .page-header-student-title
+                    h5.page-title Thông tin môn học
+                  .row
+                    .edit-form
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Mã môn học
+                            span.login-danger *
+                          input.form-control-edit(required='' type='text' placeholder='Nhập mã môn học...' name='MaMH')
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Tên môn học
+                            span.login-danger *
+                          input.form-control-edit(required='' type='text' placeholder='Nhập tên môn học...' name='TenMH')
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Mô tả
+                            span.login-danger *
+                          select.form-control-edit(required='' name="MoTa")
+                            option(value='Môn tự chọn') Môn tự chọn
+                            option(value='Môn tự nhiên') Môn tự nhiên
+                            option(value='Môn xã hội') Môn xã hội
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Hệ số
+                            span.login-danger *
+                          select.form-control-edit(required='' name="HeSo")
+                            option(value='0') 0
+                            option(value='1') 1
+                            option(value='2') 2
+                        
+                  .student-image-submit
+                    .image-submit
+                      button.search-btn.btn(onclick="ThemMonHoc();return;") 
+                        | Xác nhận
+    script(src='/public/source/js/main.js')
+    script. 
+        async function ThemMonHoc() {
+            var form = document.querySelector("#formElem");
+
+            data = {
+                MaMH: form.querySelector("input[name=MaMH]").value,
+                HeSo: form.querySelector("select[name=HeSo]").value,
+                MoTa: form.querySelector("select[name=MoTa]").value,
+                TenMH: form.querySelector("input[name=TenMH]").value,
+            }
+
+            let response = await fetch('/admin/ThemMonHoc', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                    json: true
+            })
+
+            let text = await response.json(); 
+            alert (text.message);
+            if (text.redirect) 
+                window.location.href = text.redirect;
+        }

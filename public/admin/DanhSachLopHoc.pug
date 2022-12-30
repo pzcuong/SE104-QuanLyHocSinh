@@ -84,14 +84,17 @@ block content
                                     td #{LopHoc.SiSo}
                                     td #{LopHoc.MaHocKy}
                                     td 2021 - 2022
-                                    td.text-end
-                                        .action
+                                    td.text-end 
+                                        .action(style="gap: 10px;")
                                             - var functionName_1 = "XoaLopHoc('" + LopHoc.MaLop + "')"
                                             a.delete-btn(href='#',onclick=functionName_1)
                                                 i.fa-solid.fa-trash
                                             - var functionName = "XemThongTinLop('" + LopHoc.MaLop + "')"
                                             a.edit-btn.js-edit-student(href='#' onclick=functionName)
                                                 i.fa-solid.fa-pen-to-square
+                                            - var urlLink = "/admin/ThemMonHocVaoLop/" + LopHoc.MaLop + "/"
+                                            a.edit-btn.js-edit-student(href=urlLink )
+                                                i.fa-solid.fa-book
                                             - var urlLink = "/admin/ThemHocSinhLenLop/" + LopHoc.MaLop + "/"
                                             a.edit-btn.js-edit-student(href=urlLink )
                                                 i.fa-solid.fa-level-up
