@@ -130,11 +130,21 @@ async function DanhSachDiem (req, res) {
         });
     }
 
+    if(!req.body.MaLop) {
+        DanhSachLop = await usersModel.DanhSachLopHocTheoGV(req.user.result.MaGV);
+        // req.body.MaLop = DanhSachLop.result.recordsets[0][0].NamHoc;
+        return res.json({
+            statusCode: 200,
+            message: 'Lấy danh sách lớp học thành công',
+            result: DanhSachLop.result
+        });
+    }
+
     if(!req.body.MaMH) {
         console.log(req.user)
         let Role = req.user.role;
         console.log(req.user)
-        let result = await usersModel.DanhSachMHDoGVDay(Role, MaLop, req.user.result.MaGV, req.body.HocKy, req.body.NamHoc);
+        let result = await usersModel.DanhSachMHDoGVDay(Role, req.body.MaLop, req.user.result.MaGV, req.body.HocKy, req.body.NamHoc);
         console.log(result.result)
         return res.json({
             statusCode: 200,
@@ -144,7 +154,7 @@ async function DanhSachDiem (req, res) {
     }
 
     let MaMH = req.body.MaMH;
-    let result = await usersModel.DanhSachDiem(MaMH, MaLop, req.body.HocKy, req.body.NamHoc);
+    let result = await usersModel.DanhSachDiemTheoLHKT(MaMH, req.body.MaLop, req.body.HocKy, req.body.NamHoc, req.body.MaLHKT);
     console.log("Danh sach diem")
     console.log(result.result)
     console.log(result.result.length)

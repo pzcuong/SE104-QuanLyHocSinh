@@ -688,5 +688,70 @@ async function ThemVaiTro(req, res) {
             });
 }
 
+async function DanhSachHocSinhTrongLopTheoMaLop(req, res) {
+    req.MaLop = req.params.MaLop;
+
+    if(req.method === 'GET') {
+        let result = await adminModel.DanhSachHocSinhTrongLopTheoMaLop(req.MaLop);
+        console.log(result.result.recordsets)
+        if(result.statusCode === 200) {
+            let html = pug.renderFile('public/admin/ThemHocSinhLenLop.pug',{
+                ClassDataList:  result.result.recordset,
+                user: {
+                    HoTen: req.user.result.HoTen,
+                }, role: req.user.role
+            });
+            res.send(html);
+        } else {
+            let html = pug.renderFile('public/404.pug', { 
+                message: result.message,
+                redirect: 'public/Home.pug'
+            });
+            res.send(html);
+        }
+    } else if (req.method === 'POST') {
+        let DanhSachNamHoc;
+        console.log(req.body)
+        req.MaLop = req.params.MaLop;
+
+        if(!req.body.NamHoc) {
+            DanhSachNamHoc = await userModel.DanhSachNamHoc();
+            req.body.NamHoc = DanhSachNamHoc.result.recordsets[0][0].NamHoc;
+            return res.json({
+                statusCode: 200,
+                message: 'Lấy danh sách năm học thành công',
+                result: DanhSachNamHoc.result.recordsets[0]
+            });
+        }
+
+        if(!req.body.MaLop) {
+            DanhSachLop = await adminModel.DanhSachLopHoc()
+            // req.body.MaLop = DanhSachLop.result.recordsets[0][0].NamHoc;
+            return res.json({
+                statusCode: 200,
+                message: 'Lấy danh sách lớp học thành công',
+                result: DanhSachLop.result
+            });
+        }
+
+        for(let i = 0; i < req.body.DanhSachHocSinh.length; i++) {
+            let result = await adminModel.ThemHocSinhVaoLop(req.body.DanhSachHocSinh[i], req.body.MaLop);
+            if (result.statusCode !== 200) 
+                return res.json({
+                    statusCode: 400,
+                    message: 'Thêm học sinh vào lớp không thành công',
+                    error: result.error
+                });
+        }
+
+        return res.json({
+            statusCode: 200,
+            message: 'Thêm học sinh vào lớp thành công',
+        });
+
+    }
+}
+
 exports.DanhSachVaiTro = DanhSachVaiTro;
 exports.ThemVaiTro = ThemVaiTro;
+exports.DanhSachHocSinhTrongLopTheoMaLop = DanhSachHocSinhTrongLopTheoMaLop;

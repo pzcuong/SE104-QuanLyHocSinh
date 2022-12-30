@@ -534,6 +534,39 @@ async function DanhSachDiem(MaMH, MaLop, HocKy, Nam2) {
     }
 }
 
+async function DanhSachDiemTheoLHKT(MaMH, MaLop, HocKy, Nam2, MaLHKT) {
+    try {
+        // let SQLQuery = `SELECT HS.MaHS, HoTen, MaLHKT, Diem, BD.DiemTBMon, MaLop FROM HOCSINH HS, 
+        //     (SELECT KQHM.MaHS, MaLHKT, Diem, KQHM.DiemTBMon, L.MaLop
+        //     FROM KETQUAHOCMON KQHM FULL JOIN CT_HOCMON CTHM ON KQHM.MaQTHoc = CTHM.MaQTHoc FULL JOIN HOCSINH_LOP HS_L ON HS_L.MaHS = KQHM.MaHS FULL JOIN LOP L ON L.MaLop = HS_L.MaLop FULL JOIN HOCKY HK ON HK.MaHocKy = L.MaHocKy
+        //     WHERE MaMH = '${MaMH}'AND L.MaLop = N'${MaLop}' AND HK.HocKy = N'${HocKy}' AND HK.MaNam = N'NH${Nam2}'
+        //     GROUP BY KQHM.MaHS, MaLHKT, Diem, L.MaLop, KQHM.DiemTBMon) BD
+        // WHERE HS.MaHS = BD.MaHS`;
+            let SQLQuery = `	
+                SELECT DISTINCT HOCSINH.MaHS, HoTen, KQHM.MaLHKT, KQHM.Diem, LOP.MaLop, TenLop FROM (
+                    SELECT MaHS, MaLHKT, Diem, DiemTBMon
+                    FROM dbo.KETQUAHOCMON INNER JOIN dbo.CT_HOCMON ON CT_HOCMON.MaQTHoc = KETQUAHOCMON.MaQTHoc
+                    WHERE MaMH = '${MaMH}' AND KETQUAHOCMON.MaHocKy = 'HK00${HocKy}' AND MaLHKT = '${MaLHKT}'
+                    ) KQHM RIGHT JOIN dbo.HOCSINH ON HOCSINH.MaHS = KQHM.MaHS INNER JOIN dbo.HOCSINH_LOP ON HOCSINH_LOP.MaHS = HOCSINH.MaHS INNER JOIN dbo.LOP ON LOP.MaLop = HOCSINH_LOP.MaLop INNER JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaLop = LOP.MaLop
+                WHERE MaMH = '${MaMH}' AND LOP.MaLop = '${MaLop}' `
+            let result = await TruyVan("Admin", SQLQuery);
+            console.log("Danh sách các điểm", result);
+            return ({
+                statusCode: 200,
+                message: 'Lấy danh sách điểm thành công!',
+                result: result.result.recordset
+            });
+        
+    } catch (err) {
+        console.log(err);
+        return ({
+            statusCode: 400,
+            message: 'Lỗi truy vấn SQL!',
+            alert: 'Kiểm tra lại câu lệnh SQL!'
+        });
+    }
+}
+
 async function DanhSachMHDoGVDay(Role, MaLop, MaGV, HocKy, Nam2) {
     try {
         let result;
@@ -663,7 +696,7 @@ async function TinhDiemTrungBinh(MaLop) {
 }
 
 async function DanhSachLopHocTheoGV(MaGV) {
-    let SQLQuery = `SELECT DISTINCT LOP_MONHOC.MaLop, TenLop, MaGV, MaHocKy, MaKhoiLop, MaGV FROM dbo.LOP_MONHOC INNER JOIN dbo.LOP ON LOP.MaLop = LOP_MONHOC.MaLop WHERE MaGV = '${MaGV}'`;
+    let SQLQuery = `SELECT DISTINCT LOP_MONHOC.MaLop, TenLop, MaGV, MaKhoiLop, MaGV FROM dbo.LOP_MONHOC INNER JOIN dbo.LOP ON LOP.MaLop = LOP_MONHOC.MaLop WHERE MaGV = '${MaGV}'`;
     let result = await TruyVan("Admin", SQLQuery);
     console.log("Thông tin lớp", result);
     if(result.statusCode != 200) return result;
@@ -843,3 +876,4 @@ exports.XemBaoCaoDanhSachMH = XemBaoCaoDanhSachMH;
 exports.BaoCaoMonHoc = BaoCaoMonHoc;
 exports.BaoCaoHocKy = BaoCaoHocKy;
 exports.DanhSachDiemHocSinh = DanhSachDiemHocSinh;
+exports.DanhSachDiemTheoLHKT = DanhSachDiemTheoLHKT;

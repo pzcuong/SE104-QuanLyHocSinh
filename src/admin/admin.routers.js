@@ -114,4 +114,8 @@ router.route('/ThemVaiTro')
 router.route('/DanhSachVaiTro')
 	.get(isAuthAdmin, adminController.DanhSachVaiTro)
 
+router.route('/ThemHocSinhLenLop/:MaLop')
+	.get(isAuthAdmin, adminController.DanhSachHocSinhTrongLopTheoMaLop)	
+	.post(isAuthAdmin, adminController.DanhSachHocSinhTrongLopTheoMaLop)
+
 module.exports = router;

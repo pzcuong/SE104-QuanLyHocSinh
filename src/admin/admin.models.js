@@ -239,7 +239,7 @@ async function ThayDoiThongTin(data, table) {
 
 async function DanhSachLopHoc() {
     try {
-            let SQLQuery = `SELECT * FROM LOP WHERE SiSo IS NOT NULL`;
+            let SQLQuery = `SELECT * FROM LOP`;
 
             let result = await TruyVan("Admin", SQLQuery);
             let class_data = result.result.recordset[0];
@@ -413,6 +413,29 @@ async function ThayDoiQuyDinh(data) {
     }
 }
 
+async function DanhSachHocSinhTrongLopTheoMaLop(MaLop) {
+    try {
+        let SQLQuery = `SELECT DISTINCT TenLop, SiSo, HOCSINH.MaHS, HoTen, GioiTinh, NgSinh, DiaChi, (DiemTBHK + DiemTBHK2*2)/3 AS DTBNam
+        FROM LOP 
+            INNER JOIN dbo.HOCSINH_LOP ON HOCSINH_LOP.MaLop = LOP.MaLop 
+            INNER JOIN dbo.HOCSINH ON HOCSINH.MaHS = HOCSINH_LOP.MaHS
+        WHERE LOP.MaLop = '${MaLop}'`;
+
+        let result = await TruyVan("Admin", SQLQuery);
+        console.log("Danh sách các học sinh trong lớp theo mã lớp", result);
+        return result;
+    } catch (err) {
+        console.log(err);
+        return ({
+            statusCode: 400,
+            message: 'Lỗi truy vấn SQL!',
+            alert: 'Kiểm tra lại câu lệnh SQL!'
+        });
+    }
+}
+
+
 exports.XemQuyDinh = XemQuyDinh;
 exports.ThayDoiQuyDinh = ThayDoiQuyDinh;
 exports.ThemVaiTro = ThemVaiTro;
+exports.DanhSachHocSinhTrongLopTheoMaLop = DanhSachHocSinhTrongLopTheoMaLop;
