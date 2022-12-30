@@ -445,4 +445,3 @@ async function DanhSachDiemHocSinh(req, res) {
 }
 
 exports.DanhSachDiemHocSinh = DanhSachDiemHocSinh;
-

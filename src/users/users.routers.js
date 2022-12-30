@@ -2,6 +2,7 @@ const express = require('express');
 var pug = require('pug');
 var path = require("path");
 const router = express.Router();
+const usersModel = require('../users/users.models');
 const authMiddleware = require('../auth/auth.middlewares');
 const authController = require('../auth/auth.controller');
 const userController = require('./users.controller');
@@ -26,7 +27,11 @@ router.route('/ThayDoiThongTin')
 
 router.get('/profile', isAuth, async (req, res) => {
 		console.log(req.user);
-		let html = pug.renderFile('public/user/Profile.pug', {             
+		let DSLop = await usersModel.XemDanhSachLopHocSinh(req.user.result.MaHS);
+		console.log(DSLop)
+
+		let html = pug.renderFile('public/user/Profile.pug', {
+			DanhSachLop: DSLop.result.recordset,       
 			user: req.user.result,        
 			image: req.image,
 			role: req.user.role

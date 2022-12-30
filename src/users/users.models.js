@@ -850,6 +850,27 @@ async function XemBaoCaoDanhSachMH(Role, MaGV, HocKy, Nam2) {
     }
 }
 
+async function XemDanhSachLopHocSinh(MaHS) {
+    try {
+        let SQLQuery = `SELECT DISTINCT HOCSINH.MaHS, HoTen, GioiTinh, NgSinh, DiaChi, Email, TenLop
+        FROM HOCSINH 
+            LEFT JOIN dbo.HOCSINH_LOP ON HOCSINH_LOP.MaHS = HOCSINH.MaHS
+            INNER JOIN dbo.LOP ON LOP.MaLop = HOCSINH_LOP.MaLop
+        WHERE HOCSINH.MaHS = '${MaHS}'`;
+        console.log(SQLQuery)
+        let result = await TruyVan("Admin", SQLQuery);
+        console.log("Danh sách các lớp học sinh", result);
+        return result;
+    } catch (err) {
+        console.log(err);
+        return ({
+            statusCode: 400,
+            message: 'Lỗi truy vấn SQL!',
+            alert: 'Kiểm tra lại câu lệnh SQL!'
+        });
+    }
+}
+
 exports.DanhSachHocSinhTheoMaHS = DanhSachHocSinhTheoMaHS;
 exports.DanhSachDiem = DanhSachDiem;
 exports.DanhSachMHDoGVDay = DanhSachMHDoGVDay;
@@ -877,3 +898,4 @@ exports.BaoCaoMonHoc = BaoCaoMonHoc;
 exports.BaoCaoHocKy = BaoCaoHocKy;
 exports.DanhSachDiemHocSinh = DanhSachDiemHocSinh;
 exports.DanhSachDiemTheoLHKT = DanhSachDiemTheoLHKT;
+exports.XemDanhSachLopHocSinh = XemDanhSachLopHocSinh;
