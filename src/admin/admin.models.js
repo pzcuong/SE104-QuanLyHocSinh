@@ -346,10 +346,70 @@ async function XoaLopHoc(MaLop) {
     }
 }
 
+async function DanhSachMonHoc() {
+    try {
+            let SQLQuery = `SELECT DISTINCT MaMH, TenMH, MoTa, HeSo
+            FROM MONHOC MH
+            ORDER BY MH.MaMH`;
+
+            let result = await TruyVan("Admin", SQLQuery);
+            let subject_data = result.result.recordset[0];
+            console.log(result);
+            return result;
+
+    } catch (err) {
+        console.log("Lỗi DanhSachMonHoc (admin.models)", err);
+        return ({
+            statusCode: 500,
+            message: 'Lỗi hệ thống!',
+            alert: 'Lỗi hệ thống'
+        });
+    }
+}
+
+async function XoaMonHoc(MaMH) {
+    try {
+
+        let SQLQuery = `delete from MONHOC where MaMH = N'${MaMH}'`;
+        let result = await TruyVan("Admin", SQLQuery);
+        // let SQLQuery_XT = `delete from XacThuc where MaND = N'${MaHS}'`;
+        // let result_XT = await TruyVan("Admin", SQLQuery_XT);
+        console.log("Xóa môn học", result);
+        return result;
+    } catch(err) {
+        console.log(err);
+        return ({ 
+            statusCode: 400,
+            message: 'Lỗi truy vấn SQL!',
+            alert: 'Kiểm tra lại câu lệnh SQL!'
+        });
+    }
+}
+
+async function ThongTinMonHoc(MaMH) {
+    try {
+
+        let SQLQuery = `select * from MONHOC where MaMH = N'${MaMH}'`;
+        let result = await TruyVan("Admin", SQLQuery);
+        // let SQLQuery_XT = `delete from XacThuc where MaND = N'${MaHS}'`;
+        // let result_XT = await TruyVan("Admin", SQLQuery_XT);
+        console.log("Xem thông tin môn học", result);
+        return result;
+    } catch(err) {
+        console.log(err);
+        return ({ 
+            statusCode: 400,
+            message: 'Lỗi truy vấn SQL!',
+            alert: 'Kiểm tra lại câu lệnh SQL!'
+        });
+    }
+}
+
+exports.ThongTinMonHoc = ThongTinMonHoc;
 exports.XoaLopHoc = XoaLopHoc;
 exports.XoaGiaoVien = XoaGiaoVien;
 exports.XoaHocSinh = XoaHocSinh;
-
+exports.DanhSachMonHoc = DanhSachMonHoc;
 exports.ThemGiaoVienVaoLop = ThemGiaoVienVaoLop;
 exports.ThemHocSinhVaoLop = ThemHocSinhVaoLop;
 exports.DanhSachHocSinh = DanhSachHocSinh;
@@ -363,6 +423,7 @@ exports.DanhSachGiaoVien = DanhSachGiaoVien;
 exports.DanhSachBaiDang = DanhSachBaiDang;
 exports.XoaBaiDang = XoaBaiDang;
 exports.DanhSachVaiTro = DanhSachVaiTro;
+exports.XoaMonHoc = XoaMonHoc;
 
 async function ThemVaiTro(data) {
     try {
@@ -434,8 +495,64 @@ async function DanhSachHocSinhTrongLopTheoMaLop(MaLop) {
     }
 }
 
+async function DanhSachMonHocTrongLopTheoMaLop(MaLop) {
+    try {
+        let SQLQuery = `SELECT DISTINCT LOP_MONHOC.MaMH, TenMH, MoTa, HeSo, LOP.MaLop, TenLop, MaGV
+        FROM dbo.MONHOC 
+            FULL JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaMH = MONHOC.MaMH
+            INNER JOIN dbo.LOP ON LOP.MaLop = LOP_MONHOC.MaLop
+        WHERE LOP.MaLop = '${MaLop}'`;
+
+        let result = await TruyVan("Admin", SQLQuery);
+        console.log("Danh sách các môn học trong lớp theo mã lớp", result);
+
+        let SQLQuery2 = `SELECT DISTINCT MONHOC.MaMH, TenMH, MoTa, HeSo, MaGV
+        FROM dbo.MONHOC 
+            LEFT JOIN dbo.LOP_MONHOC ON LOP_MONHOC.MaMH = MONHOC.MaMH
+        WHERE MaLop = '${MaLop}' OR MaLop IS NULL
+        ORDER BY MONHOC.MaMH`;
+
+        let result2 = await TruyVan("Admin", SQLQuery2);
+        console.log("Danh sách các môn học", result2);
+
+        let SQLQuery3 = `SELECT DISTINCT * FROM GIAOVIEN`;
+        let result3 = await TruyVan("Admin", SQLQuery3);
+
+        return {
+            DanhSachMonHoc: result2,
+            DanhSachMonHocTrongLop: result,
+            DanhSachGiaoVien: result3
+        };
+    } catch (err) {
+        console.log(err);
+        return ({
+            statusCode: 400,
+            message: 'Lỗi truy vấn SQL!',
+            alert: 'Kiểm tra lại câu lệnh SQL!'
+        });
+    }
+}
+
+async function ThemMonHocVaoLop(MaLop, MaMH) {
+    try {
+        let SQLQuery = `insert into LOP_MONHOC (MaLop, MaMH) values ('${MaLop}', '${MaMH}')`;
+        let result = await TruyVan("Admin", SQLQuery);
+        console.log("Thêm môn học vào lớp", result);
+        return result;
+    } catch(err) {
+        console.log(err);
+        return ({ 
+            statusCode: 400,
+            message: 'Lỗi truy vấn SQL!',
+            alert: 'Kiểm tra lại câu lệnh SQL!'
+        });
+    }
+}
+
 
 exports.XemQuyDinh = XemQuyDinh;
 exports.ThayDoiQuyDinh = ThayDoiQuyDinh;
 exports.ThemVaiTro = ThemVaiTro;
 exports.DanhSachHocSinhTrongLopTheoMaLop = DanhSachHocSinhTrongLopTheoMaLop;
+exports.DanhSachMonHocTrongLopTheoMaLop = DanhSachMonHocTrongLopTheoMaLop;
+exports.ThemMonHocVaoLop = ThemMonHocVaoLop;

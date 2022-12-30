@@ -414,6 +414,38 @@ async function ThongTinNguoiDung(req, res) {
 
 }
 
+async function ThongTinMonHoc(req, res) {
+    try {
+        const data = req.body;
+        //convert to string
+        let MaMH = data.MaMH;
+        
+        const result = await adminModel.ThongTinMonHoc(MaMH);
+        if(result.statusCode === 200)
+            return res
+                .status(200)
+                .send({
+                    statusCode: 200,
+                    message: 'Lấy thông tin môn học thành công',
+                    data: result.result.recordset[0]
+                });
+        else
+            return res
+                .status(400)
+                .send({
+                    statusCode: 400,
+                    message: 'Lấy thông tin môn học không thành công',
+                });
+    } catch (error) {
+        console.log(error);
+        return res.status(500)
+                .send({
+                    statusCode: 500,
+                    message: 'Lấy thông tin môn học không thành công',
+                });
+    }
+}
+
 async function ThayDoiThongTin(req, res) {
     const data = req.body;
     console.log("data")
@@ -752,6 +784,146 @@ async function DanhSachHocSinhTrongLopTheoMaLop(req, res) {
     }
 }
 
+async function DanhSachMonHocTrongLopTheoMaLop(req, res) {
+    req.MaLop = req.params.MaLop;
+
+    if(req.method === 'GET') {
+        let result = await adminModel.DanhSachMonHocTrongLopTheoMaLop(req.MaLop);
+        console.log(result.DanhSachMonHocTrongLop.result.recordset)
+        if(result.DanhSachMonHoc.statusCode === 200) {
+            let html = pug.renderFile('public/admin/ThemMonHocVaoLop.pug',{
+                DanhSachMonHoc:  result.DanhSachMonHoc.result.recordset,
+                DanhSachMonHocTrongLop: result.DanhSachMonHocTrongLop.result.recordset,
+                DanhSachGiaoVien: result.DanhSachGiaoVien.result.recordset,
+                user: {
+                    HoTen: req.user.result.HoTen,
+                }, role: req.user.role
+            });
+            res.send(html);
+        } else {
+            let html = pug.renderFile('public/404.pug', { 
+                message: result.message,
+                redirect: 'public/Home.pug'
+            });
+            res.send(html);
+        }
+    } else if (req.method === 'POST') {
+        let DanhSachNamHoc;
+        console.log(req.body)
+        req.MaLop = req.params.MaLop;
+
+        for(let i = 0; i < req.body.DanhSachMonHoc.length; i++) {
+            let result = await adminModel.ThemMonHocVaoLop(req.MaLop, req.body.DanhSachMonHoc[i]);
+            if (result.statusCode !== 200) 
+                return res.json({
+                    statusCode: 400,
+                    message: 'Thêm môn học vào lớp không thành công',
+                    error: result.error
+                });
+        }
+
+        return res.json({
+            statusCode: 200,
+            message: 'Thêm môn học vào lớp thành công',
+        });
+
+    }
+}
+
 exports.DanhSachVaiTro = DanhSachVaiTro;
 exports.ThemVaiTro = ThemVaiTro;
 exports.DanhSachHocSinhTrongLopTheoMaLop = DanhSachHocSinhTrongLopTheoMaLop;
+exports.DanhSachMonHocTrongLopTheoMaLop = DanhSachMonHocTrongLopTheoMaLop;
+
+async function XoaMonHoc(req, res) {
+    const result = await adminModel.XoaMonHoc(req.body.MaMH);
+    if(result.statusCode === 200){
+        return res
+            .status(200)
+            .send({
+                statusCode: 200,
+                message: 'Xóa môn học thành công',
+                data: result.result,
+               
+            });
+    }else
+        return res
+            .status(400)
+            .send({
+                statusCode: 400,
+                message: 'Môn học đang được giảng dạy, Không thể xóa!',
+            });
+}
+
+async function ThemMonHoc(req, res) {
+    try {
+
+        const data = req.body;
+        if(!data.MaMH || !data.MoTa || !data.HeSo || !data.TenMH)
+            return res
+                .status(400)
+                .send({
+                    statusCode: 400,
+                    message: 'Vui lòng nhập đầy đủ thông tin',
+                    alert: "Vui lòng nhập đầy đủ thông tin",
+                    redirect: '/admin/ThemMonHoc'
+                });
+
+                    let SQLQuery = `insert into MONHOC (MaMH,TenMH,MoTa,HeSo) values ( '${data.MaMH}',N'${data.TenMH}',N'${data.MoTa}','${data.HeSo}')`;
+                    let result_subject = await adminModel.TruyVan("Admin", SQLQuery);
+                    console.log(result_subject);
+                    if (result_subject.statusCode == 200){
+                        return res
+                            .status(200)
+                            .send({
+                                statusCode: 400,
+                                message: 'Thêm môn học thành công',
+                                alert: "Thêm môn học thành công",
+                                redirect: '/admin/ThemMonHoc'
+                            });
+                    }else{
+                        return res
+                            .status(400)
+                            .send({
+                                statusCode: 400,
+                                message: 'Môn học đã tồn tại,thêm không thành công!',
+                                alert: "Môn học đã tồn tại,thêm không thành công!",
+                                redirect: '/admin/ThemMonHoc'
+                            });
+                    }
+    } catch (error) {
+        console.log(error);
+        return res
+        .status(400)
+        .send({
+            statusCode: 400,
+            message: 'Thêm môn học vào lớp không thành công',
+            alert: "Thêm môn học không thành công",
+            redirect: '/admin/ThemMonHoc'
+        });
+    }
+}
+
+async function DanhSachMonHoc(req, res) { 
+    let result = await adminModel.DanhSachMonHoc();
+    if(result.statusCode === 200) {
+        let html = pug.renderFile('public/admin/DanhSachMonHoc.pug',{
+            SubjectDataList:  result.result.recordsets[0],
+            user: {
+                HoTen: req.user.result.HoTen,
+            }, role: req.user.role
+        });
+        res.send(html);
+    } else {
+        let html = pug.renderFile('public/404.pug', { 
+            message: result.message,
+            redirect: 'public/Home.pug'
+        });
+        res.send(html);
+    }
+}
+
+exports.XoaMonHoc = XoaMonHoc;
+exports.ThemMonHoc = ThemMonHoc;
+exports.DanhSachMonHoc = DanhSachMonHoc;
+exports.ThongTinMonHoc = ThongTinMonHoc;

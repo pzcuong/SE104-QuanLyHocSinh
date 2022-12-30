@@ -118,4 +118,28 @@ router.route('/ThemHocSinhLenLop/:MaLop')
 	.get(isAuthAdmin, adminController.DanhSachHocSinhTrongLopTheoMaLop)	
 	.post(isAuthAdmin, adminController.DanhSachHocSinhTrongLopTheoMaLop)
 
+router.route('/XoaMonHoc')
+	.post(isAuthAdmin, adminController.XoaMonHoc)
+
+router.route('/ThemMonHoc')
+	.get(isAuthAdmin, (req, res) => {
+		let html = pug.renderFile('public/admin/ThemMonHoc.pug', {
+			user: req.user.result,
+			image: req.image,
+			role: req.user.role
+		});
+		res.send(html);
+	})
+	.post(isAuthAdmin, adminController.ThemMonHoc)
+
+router.route('/DanhSachMonHoc')
+	.get(isAuthAdmin, adminController.DanhSachMonHoc);
+
+router.route('/ThongTinMonHoc')
+	.post(isAuthAdmin, adminController.ThongTinMonHoc);
+
+router.route('/ThemMonHocVaoLop/:MaLop')
+	.get(isAuthAdmin, adminController.DanhSachMonHocTrongLopTheoMaLop)	
+	.post(isAuthAdmin, adminController.DanhSachMonHocTrongLopTheoMaLop)
+
 module.exports = router;
