@@ -40,7 +40,7 @@ block content
                         .card-user
                           .card-body-user
                             .heading-detail
-                              h4 Personal Detail:
+                              h4 Thông tin:
                             .personal-activity
                               .personal-icon
                                 i.fa-solid.fa-user
@@ -52,7 +52,8 @@ block content
                                 i.fa-solid.fa-building
                               .view-personal
                                 h4 Lớp
-                                h5 10A1
+                                  each Lop in DanhSachLop
+                                    h5 #{Lop.TenLop}
                             .personal-activity
                               .personal-icon
                                 i.fa-solid.fa-user
@@ -65,7 +66,7 @@ block content
                               .view-personal
                                 h4 Ngày Sinh
                                 - var date = new Date(user.NgSinh);
-                                - var date = (date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1)) + '/' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' + date.getFullYear();
+                                - date = date.toLocaleDateString('vi-VN');
 
                                 h5 #{date} 
                             .personal-activity
