@@ -1,0 +1,60 @@
+extends ../header.pug
+
+block title
+  title #{NoiDung[0].TieuDe}
+
+block append script
+  script(src='https://kit.fontawesome.com/7b85820244.js' crossorigin='anonymous')
+
+block append css
+  link(rel='stylesheet' href='/public/source/css/notice.css')
+
+block content
+  section.home-section
+    .home-content
+      i.fa-solid.fa-bars
+  .page-wrapper
+    .content
+      .page-header
+        .page-header-title
+          .page-header-student-title
+            h3.page-title Thông báo chung 
+      .student-form-view
+        .card
+          .card-table
+            .card-body
+              div
+                .row
+                  // Mới sửa
+                  .card-body-content
+                    .view-content
+                      .content-head
+                          h1.content-title #{NoiDung[0].TieuDe}
+                      .content-body
+                        .content-body-main
+                          .content-date
+                            p.notice-up-date
+                              - let NgayDang = new Date(NoiDung[0].NgayDang)
+                              i #{"Ngày đăng: " + NgayDang.toLocaleDateString('en-GB')}
+                          .content-main(style="padding: 0px !important;")
+                            //- .content-main
+                            #{NoiDung[0].NoiDung}/|
+
+    script(src='/public/source/js/main.js')
+    script. 
+      var id = document.getElementsByClassName("content-main");
+
+      //get element with class name is content clearfix
+      var contentElement = document.getElementsByClassName("content clearfix");
+
+      for(var i = 0; i < id.length; i++) {
+        var content = id[i].innerHTML;
+        console.log(content)
+        id[i].innerHTML = content.replace(/&lt;|&gt;|\/$/g, "");
+      }
+      
+      for(var i = 0; i < id.length; i++) {
+        contentElement[i].style = "padding: 0px !important;";
+        var content = contentElement[i].innerHTML;
+        contentElement[i].innerHTML = content.replace(/&lt;|&gt;|\/$/g, "");
+      }

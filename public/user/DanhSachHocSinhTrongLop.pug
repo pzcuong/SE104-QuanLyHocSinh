@@ -1,0 +1,65 @@
+extends ../header.pug
+
+block title
+  title Danh sách học sinh lớp #{ClassDataList[0].TenLop} 
+
+block append script
+  script(src='https://kit.fontawesome.com/7b85820244.js' crossorigin='anonymous')
+
+block append css
+  link(rel='stylesheet' href='/public/source/css/classroom.css  ')
+  link(rel='stylesheet' href='/public/source/css/edit-classroom.css ')
+  link(rel='stylesheet' href='/public/source/css/notice.css')
+  link(rel='stylesheet' href='/public/source/fonts/fontawesome-free-6.2.0-web/css/all.css')
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              h3.page-title(style="margin-bottom: 10px;")
+               | Danh Sách Lớp #{ClassDataList[0].TenLop} 
+              h3 Sỉ số: #{ClassDataList[0].SiSo}
+        .student-form
+          .card
+            .card-table
+              .card-body
+                .card-body_body
+                  .Data-Table
+                    .Data-Table-body
+                      .Table-body
+                        table.Table
+                          thead.student-thead
+                            tr.thead(role='row')
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='STT')
+                                | Số thứ tự
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='HoTen')
+                                | Họ và tên
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='GioiTinh')
+                                | Giới tính
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='NgSinh')
+                                | Năm sinh
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='DiaChi')
+                                | Địa chỉ
+
+                          tbody.student-tbody
+                            - var STT = 1;
+                            each HocSinh in ClassDataList
+                                tr.odd.table-normal(role='row')
+                                    td #{STT++}
+                                    td #{HocSinh.HoTen}
+                                    td #{HocSinh.GioiTinh}
+                                    - var NgSinh = new Date(HocSinh.NgSinh)
+                                    - var NgSinh = NgSinh.toLocaleDateString('en-GB')
+                                    td #{NgSinh}
+                                    td #{HocSinh.DiaChi}
+
+                    .Data-Table-footer
+
+    script(src='/public/source/js/main.js')
+    script(src='/public/source/js/edit-student.js ')
+    script(src='/public/source/js/students.js ')

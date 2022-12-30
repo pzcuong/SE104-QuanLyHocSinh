@@ -1,0 +1,73 @@
+extends ../header.pug
+
+block title
+    title Danh sách học sinh
+
+block append css
+    link(rel='stylesheet' href='/public/source/css/students.css  ')
+    link(rel='stylesheet' href='/public/source/css/edit-student.css ')
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              h3.page-title Danh sách Học Sinh
+        // Start: Search Bar
+        .student-form
+          .card
+            .card-table
+              .card-body
+
+                .card-body_body
+                  .Data-Table
+                    .Data-Table-body
+                      .Table-body 
+                        if (ClassDataList.length == 0)
+                            h2 Không có dữ liệu
+                        else
+                            table.Table
+                              thead.student-thead
+                                tr.thead(role='row')
+                                th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='MaSo')
+                                    | Mã Số
+                                th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='HoTen')
+                                    | Họ Tên
+                                th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='Lop')
+                                    | Lớp
+                                th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='GioiTinh')
+                                    | Giới Tính
+                                th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='NgaySinh')
+                                    | Ngày Sinh
+                                th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='Email')
+                                    | Email
+                                th.sorting.address(tabindex='0' rowspan='1' colspan='1' aria-label='DiaChi')
+                                    | Địa Chỉ
+
+                              tbody.student-tbody
+                                if (Object.keys(ClassDataList).length == 0)
+                                    h2 Không có dữ liệu
+                                else
+                                    each user in ClassDataList
+                                        - var date = new Date(user.NgSinh).toLocaleDateString('en-GB');
+                                        
+                                        tr.odd.table-normal(role='row', id=user.MaHS)
+                                            td #{user.MaHS[0]}
+                                            td
+                                                a(href='#') #{user.HoTen}
+                                            td #{user.MaLop}
+                                            td #{user.GioiTinh}
+                                            td #{date}
+                                            td #{user.Email}
+                                            td #{user.DiaChi}
+
+
+                    .Data-Table-footer
+
+    script(src='/public/source/js/main.js')
+    script(src='/public/source/js/edit-student.js ')
+    script(src='/public/source/js/students.js ')

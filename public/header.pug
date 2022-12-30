@@ -1,0 +1,209 @@
+html(lang='vi')
+  head
+    - var role = role
+    - var role_encode;
+      if (role == 'Admin')
+        - role_encode = "Administator"
+      if (role == 'GiaoVien')
+        - role_encode = "Giáo Viên"
+      if (role == "HocSinh")
+        - role_encode = "Học Sinh"
+
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    link(rel='icon' type='image/x-icon' href='/public/source/img/favicon.png')
+
+    block title
+      title CoCoEdu
+
+    block css
+      link(rel='stylesheet' href='/public/source/css/style.css')
+      link(rel='stylesheet' href='/public/source/css/index.css')
+      link(rel='stylesheet' href='/public/source/fonts/fontawesome-free-6.2.0-web/css/all.css')
+    
+    block script
+      script(src='/public/source/js/script.js')
+      script(src='https://kit.fontawesome.com/7b85820244.js' crossorigin='anonymous')
+  body#body-wrapper
+
+
+    .header
+      .actions_user_hd
+        #profile.profile_hd(onclick='menuhdToggle()')
+          img(src='/public/source/img/user_none1.png' alt='image user')
+        .menu_user_hd
+          .profile_name #{user.HoTen}
+            br
+            span #{role_encode}
+          ul
+            li
+              a(href='/user/profile/') Hồ Sơ
+            li
+              a(onclick="DangXuat()") Đăng Xuất
+      form.search-bar
+        input.searchTerm(type='text' placeholder='Tìm kiếm tại đây')
+        button.searchButton(type='submit')
+          i.fa-solid.fa-magnifying-glass
+    .sidebar
+      .logo-details
+        img(src='/public/source/img/preskool.png' alt='logo')
+        a(href='/user/profile/')
+          span.logo_name CoCoEdu
+      // Mới sửa
+      .nav_links
+        .sidenav
+          // Bảng điều khiển
+          div
+            button.dropdown-btn
+              i#icon_sn.fa-solid.fa-border-all
+              span.link_name Bảng điều khiển
+              i#drop.fas.fa-angle-right
+            .dropdown-container
+              a.link_name(href='#') Bảng điều khiển
+              if (role == 'Admin')
+                .nbar-sub
+                  a(href='/admin/Dashboard/') Administrator
+              if (role == 'GiaoVien')
+                .nbar-sub
+                  a(href='/user/DashboardGiaoVien/') Giáo Viên
+              if (role == 'HocSinh')
+                .nbar-sub
+                  a(href='/user/DashboardHocSinh/') Học Sinh
+          // SInh viên
+          if(role == 'Admin' || role == 'HocSinh')
+            div
+              button.dropdown-btn
+                i#icon_sn.fa-solid.fa-graduation-cap
+                span.link_name Học Sinh
+                i#drop.fas.fa-angle-right
+              .dropdown-container
+                a.link_name(href='#') Học Sinh
+                  if (role == "HocSinh")
+                    .nbar-sub
+                      a(href='/user/DanhSachHocSinh') Danh Sách Học Sinh
+                  if (role == "Admin")
+                    .nbar-sub
+                      a(href='/admin/DanhSachHocSinh') Danh Sách Học Sinh
+                  if (role == "Admin")
+                    .nbar-sub
+                      a(href='/admin/ThemTaiKhoan') Thêm Học Sinh
+          if(role == 'Admin' || role == 'GiaoVien')
+            div
+              button.dropdown-btn
+                i#icon_sn.fa-solid.fa-book-open
+                span.link_name Lớp
+                i#drop.fas.fa-angle-right
+              .dropdown-container
+                a.link_name(href='#') Lớp
+                
+                if(role == 'GiaoVien')
+                  .nbar-sub
+                    a(href='/user/DanhSachLopHoc') Danh Sách Lớp
+                if( role == 'Admin')
+                  .nbar-sub
+                    a(href='/admin/DanhSachLopHoc') Danh Sách Lớp
+                  .nbar-sub
+                    a(href='/admin/ThemLopHoc') Thêm Lớp
+
+          if(role == 'Admin')
+            div
+              button.dropdown-btn
+                i#icon_sn.fa-solid.fa-book
+                span.link_name Môn học
+                i#drop.fas.fa-angle-right
+              .dropdown-container
+                a.link_name(href='#') Môn học
+                  .nbar-sub
+                    a(href='/admin/DanhSachMonHoc') Danh Sách Môn Học
+                  .nbar-sub
+                    a(href='/admin/ThemMonHoc') Thêm Môn Học
+                    
+          if(role == 'Admin' || role == 'GiaoVien')
+            div
+              button.dropdown-btn
+                i#icon_sn.fa-solid.fa-chalkboard-user
+                span.link_name Giáo Viên
+                i#drop.fas.fa-angle-right
+              .dropdown-container
+                a.link_name(href='#') Giáo Viên
+                if (role =="GiaoVien")
+                  .nbar-sub
+                    a(href='/user/DanhSachGiaoVien') Danh Sách Giáo Viên
+                if (role == "Admin")
+                  .nbar-sub
+                    a(href='/admin/DanhSachGiaoVien') Danh Sách Giáo Viên
+                  .nbar-sub
+                    a(href='/admin/ThemTaiKhoan') Thêm Giáo Viên
+            // Bảng điểm
+            
+            if( role == "GiaoVien")
+              div
+                button.dropdown-btn
+                  i#icon_sn.fa-regular.fa-calendar
+                  span.link_name Bảng điểm
+                  i#drop.fas.fa-angle-right
+                .dropdown-container
+                  a.link_name(href='#') Bảng điểm
+                  .nbar-sub
+                    a(href='#') Xem bảng điểm
+                    // Mới sửa
+                  .nbar-sub
+                    a(href='/user/NhapDiemLopHoc/') Nhập bảng điểm
+                  // Mới sửa
+                // Mới sửa
+            
+          div
+            button.dropdown-btn
+              i#icon_sn.fa-solid.fa-pen
+              span.link_name Thông báo
+              i#drop.fas.fa-angle-right
+            .dropdown-container
+              a.link_name(href='#') Thông báo
+              .nbar-sub
+                a(href='/user/XemThongBao') Xem Thông báo
+              
+              if (role == "Admin")
+                .nbar-sub
+                  a(href='/admin/DanhSachBaiDang') Danh Sách Thông báo
+                .nbar-sub
+                  a(href='/admin/ThemBaiDang') Tạo Thông báo
+          // Quy Định
+          if (role == "Admin")
+            div
+                button.dropdown-btn
+                  i#icon_sn.fa-solid.fa-pen-ruler
+                  span.link_name Quy Định
+                  i#drop.fas.fa-angle-right
+                .dropdown-container
+                  a.link_name(href='#') Quy Định
+                  .nbar-sub
+                    a(href='/admin/QuyDinh') Chỉnh Sửa Quy Định
+            // Báo Cáo
+          if (role == "Admin" || role == "GiaoVien")
+            div
+                button.dropdown-btn
+                  i#icon_sn.fa-solid.fa-file-invoice
+                  span.link_name Báo Cáo
+                  i#drop.fas.fa-angle-right
+                .dropdown-container
+                  a.link_name(href='#') Báo Cáo
+                  .nbar-sub
+                    a(href='/user/DanhSachDiemHocSinh') Danh sách điểm học sinh
+                  .nbar-sub
+                    a(href='/user/BaoCaoMonHoc') Báo Cáo Tổng Kết Môn
+                  .nbar-sub
+                    a(href='/user/BaoCaoHocKy') Báo Cáo Tổng Kết Học Kỳ
+          if (role == "Admin")
+            div
+                button.dropdown-btn
+                  i#icon_sn.fa-solid.fa-user-plus
+                  span.link_name() Vai trò
+                  i#drop.fas.fa-angle-right
+                .dropdown-container
+                  a.link_name(href='#') Vai trò
+                  .nbar-sub
+                    a(href='/admin/DanhSachVaiTro') Danh sách vai trò
+                  .nbar-sub
+                    a(href='/admin/ThemVaiTro') Thêm vai trò
+
+    block content

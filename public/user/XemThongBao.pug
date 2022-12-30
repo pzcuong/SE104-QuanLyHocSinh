@@ -1,0 +1,34 @@
+extends ../header.pug
+
+block title
+  title Thông báo chung
+
+block content
+  section.home-section
+    .home-content
+      i.fa-solid.fa-bars
+  .page-wrapper
+    .content
+      .page-header
+        .page-header-title
+          .page-header-student-title
+            h3.page-title Thông báo chung
+      .student-form-view
+        .card
+          .card-table
+            .card-body
+              div
+                .row
+                  .card-body-content
+                    .view-content
+                      .item-list
+                        ul
+                          each ThongBao in DanhSachThongBao
+                              - var NgayDang = new Date(ThongBao.NgayDang).toLocaleDateString('en-GB')
+                              li.view-row
+                                  .view-row-icon
+                                      i.fa-solid.fa-caret-right
+                                      - var href = '/user/XemThongBao/' + ThongBao.MaBaiDang + '/'
+                                      a(href=href) #{ThongBao.TieuDe} - #{NgayDang}
+                          
+    script(src='/public/source/js/main.js')

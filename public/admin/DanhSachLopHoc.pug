@@ -1,0 +1,159 @@
+extends  ../header.pug
+
+block title
+  title Quản Lý Danh Sách Lớp Học
+
+block append css
+    link(rel='stylesheet' href='/public/source/css/classroom.css  ')
+    link(rel='stylesheet' href='/public/source/css/edit-classroom.css ')
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              h3.page-title Danh Sách Lớp
+        // Start: Search Bar
+        .student-group-form
+          .search-group
+            .submit-form-student.submit
+              .form-group.local-form
+                select.form-control-edit-btn(required='' name='HocKy')
+                  option(value='') Chọn học kỳ
+                  option(value='1') Học kỳ 1
+                  option(value='2') Học kỳ 2
+            .submit-form-student.submit
+              .form-group.local-form
+                select.form-control-edit-btn(required='' name='MaNamHoc')
+                  option(value='') Chọn năm học
+            .submit-form-student.submit
+              .form-group.local-form
+                select.form-control-edit-btn(required='' name='MaKhoi')
+                  option(value='') Chọn khối
+            //- .search-bar
+            //-   .form-group
+            //-     input.form-control(type='text' placeholder='Tìm kiếm ...')
+            .search-student-btn
+              .search-btn
+                button.btn(type='button') Lấy thông tin
+        // End: Search Bar
+        .student-form
+          .card
+            .card-table
+              .card-body
+                .card-body_head
+                  .card-body_header
+                    .page-header-student-title
+                      h3.page-title Lớp
+                    .card-body_header-icon
+                      a.btn(href='/admin/ThemLopHoc')
+                        i.fa-solid.fa-plus
+                .card-body_body
+                  .Data-Table
+                    .Data-Table-body
+                      .Table-body
+                        table.Table
+                          thead.student-thead
+                            tr.thead(role='row')
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='MaLop')
+                                | Mã Lớp
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='Lop')
+                                | Tên Lớp
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='Khoi')
+                                | Khối
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='SiSo')
+                                | Sỉ số
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='HocKy')
+                                | Học Kỳ
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='NamHoc')
+                                | Năm Học
+                              th.text-end.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='ChinhSua')
+                                | Chỉnh sửa
+                          tbody.student-tbody
+                            each LopHoc in ClassDataList
+                                tr.odd.table-normal(role='row' id=LopHoc.MaLop)
+                                    td #{LopHoc.MaLop}
+                                    - var href = '/user/DanhSachHocSinhTrongLop/' + LopHoc.MaLop
+                                    td
+                                        a(href=href) #{LopHoc.TenLop}
+                                    td #{LopHoc.MaKhoiLop}
+                                    td #{LopHoc.SiSo}
+                                    td #{LopHoc.MaHocKy}
+                                    td 2021 - 2022
+                                    td.text-end
+                                        .action
+                                            - var functionName_1 = "XoaLopHoc('" + LopHoc.MaLop + "')"
+                                            a.delete-btn(href='#',onclick=functionName_1)
+                                                i.fa-solid.fa-trash
+                                            - var functionName = "XemThongTinLop('" + LopHoc.MaLop + "')"
+                                            a.edit-btn.js-edit-student(href='#' onclick=functionName)
+                                                i.fa-solid.fa-pen-to-square
+
+                    .Data-Table-footer
+    // Modal
+    .modal.js-modal
+      .student-form-edit.js-modal-content
+        .card
+          .card-table
+            .card-body-edit
+              .modal-close.js-modal-close
+                i.fa-solid.fa-xmark
+              form(id="formElem")
+                .page-header-student-title
+                  h5.page-title Thông tin lớp
+                .row
+                  .edit-form
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Mã số lớp học
+                          span.login-danger *
+                        input.form-control-edit(required='' type='text' placeholder='Nhập mã số lớp học...' id="MaLop")
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Tên lớp
+                          span.login-danger *
+                        input.form-control-edit(required='' type='text' placeholder='Nhập tên lớp...' id="TenLop")
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Khối
+                          span.login-danger *
+                        select.form-control-edit(required='')
+                          option Khối 10
+                          option Khối 11
+                          option Khối 12
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Lớp
+                          span.login-danger *
+                        select.form-control-edit(required='')
+                          option Tự Nhiên
+                          option Xã Hội
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Học Kỳ
+                          span.login-danger *
+                        select.form-control-edit(required='')
+                          option 1
+                          option 2
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Năm Học
+                          span.login-danger *
+                        input.form-control-edit(required='' type='text')
+                .student-image-submit
+                  .image-submit
+                    button.search-btn.btn(type='submit')
+                      | Xác nhận
+    script(src='/public/source/js/main.js')
+    script(src='/public/source/js/edit-student.js ')
+    script(src='/public/source/js/students.js ')

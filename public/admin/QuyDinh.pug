@@ -1,0 +1,178 @@
+extends ../header.pug
+
+block title
+  title Quản Lý Quy Định
+
+block append css
+    link(rel='stylesheet' href='/public/source/css/QuyDinh.css  ')
+    link(rel='stylesheet' href='/public/source/css/edit-student.css ')
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              h3.page-title Danh sách quy định
+        .student-form
+          .card
+            .card-table
+              .card-body
+                .card-body_head
+                  .card-body_header
+                    .page-header-student-title
+                      h3.page-title Quy định
+                .card-body_body
+                  .Data-Table
+                    .Data-Table-body
+                      .Table-body
+                        table.Table
+                          thead.student-thead
+                            tr.thead(role='row')
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='QuyDinh')
+                                | Quy Định
+                              th.text-end.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='DiaChi')
+                                | Chỉnh sửa
+                          tbody.student-tbody
+                            tr.odd.table-normal(role='row')
+                              td
+                                | Số tuổi học sinh tối thiểu/tối đa nhập học
+                              td.text-end
+                                .action
+                                  a.edit-btn.js-edit-student(href='#')
+                                    i.fa-solid.fa-pen-to-square
+                            tr.even.table-normal(role='row')
+                              td Sĩ số lớp tối đa
+                              td.text-end
+                                .action
+                                  a.edit-btn.js-edit-student2(href='#')
+                                    i.fa-solid.fa-pen-to-square
+                            tr.odd.table-normal(role='row')
+                              td Số điểm tối thiểu/tối đa môn học
+                              td.text-end
+                                .action
+                                  a.edit-btn.js-edit-student3(href='#')
+                                    i.fa-solid.fa-pen-to-square
+                            tr.even.table-normal(role='row')
+                              td Số điểm đạt môn học
+                              td.text-end
+                                .action
+                                  a.edit-btn.js-edit-student4(href='#')
+                                    i.fa-solid.fa-pen-to-square
+                    .Data-Table-footer
+    // Modal
+    .modal.js-modal
+      .student-form-edit.js-modal-content
+        .card
+          .card-table
+            .card-body-edit
+              .modal-close.js-modal-close
+                i.fa-solid.fa-xmark
+              form(id='edit-tuoi')
+                .page-header-student-title
+                  h5.page-title Số tuổi học sinh nhập học
+                .row
+                  .edit-form-modal
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Số tuổi học sinh tối thiểu
+                          span.login-danger *
+                        input.form-control-edit(id='TuoiToiThieu' required='' type='number' placeholder='Nhập số tuổi tối thiểu...' value=ClassDataList[6].GiaTri)
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Số tuổi học sinh tối đa
+                          span.login-danger *
+                        input.form-control-edit(id='TuoiToiDa' required='' type='number' placeholder='Nhập số tuổi tối đa...' value=ClassDataList[5].GiaTri)
+                .student-image-submit
+                  .image-submit-btn
+                    button.search-btn.btn(id="submit-button" onclick="ThayDoiTuoi()")
+                      | Xác nhận
+    // Modal 2
+    .modal.js-modal2
+      .student-form-edit.js-modal-content2
+        .card
+          .card-table
+            .card-body-edit
+              .modal-close.js-modal-close2
+                i.fa-solid.fa-xmark
+              form(id='edit-siso')
+                .page-header-student-title
+                  h5.page-title Sĩ số lớp tối đa
+                .row
+                  .edit-form-modal
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Sĩ số lớp tối đa
+                          span.login-danger *
+                        input.form-control-edit(id='SiSoToiDa' required='' type='number' placeholder='Nhập sĩ số...' value=ClassDataList[4].GiaTri)
+                .student-image-submit
+                  .image-submit-btn
+                    button.search-btn.btn(id="submit-button" onclick="ThayDoiSiSo()")
+                      | Xác nhận
+    // Modal 3
+    .modal.js-modal3
+      .student-form-edit.js-modal-content3
+        .card
+          .card-table
+            .card-body-edit
+              .modal-close.js-modal-close3
+                i.fa-solid.fa-xmark
+              form(id="edit-diem")
+                .page-header-student-title
+                  h5.page-title Số điểm tối thiểu/tối đa môn học
+                .row
+                  .edit-form-modal
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Số điểm tối thiểu
+                          span.login-danger *
+                        input.form-control-edit(id='DiemToiThieu' required='' type='number' placeholder='Nhập số điểm...' value=ClassDataList[3].GiaTri)
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Số điểm tối đa
+                          span.login-danger *
+                        input.form-control-edit(id='DiemToiDa' required='' type='number' placeholder='Nhập số điểm...' value=ClassDataList[2].GiaTri)
+                .student-image-submit
+                  .image-submit-btn
+                    button.search-btn.btn(id="submit-button" onclick="ThayDoiDiemToiThieuToiDa()")
+                      | Xác nhận
+    // Modal 4
+    .modal.js-modal4
+      .student-form-edit.js-modal-content4
+        .card
+          .card-table
+            .card-body-edit
+              .modal-close.js-modal-close4
+                i.fa-solid.fa-xmark
+              form(id="edit-diemdat")
+                .page-header-student-title
+                  h5.page-title Số điểm đạt môn học
+                .row
+                  .edit-form-modal
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Số điểm trung bình đạt của 1 môn học
+                          span.login-danger *
+                        input.form-control-edit(id='DiemDatMon' required='' type='number' placeholder='Nhập số điểm...' value=ClassDataList[1].GiaTri)
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Số điểm trung bình đạt của học sinh (trên học kỳ)
+                          span.login-danger *
+                        input.form-control-edit(id='DiemDat' required='' type='number' placeholder='Nhập số điểm...' value=ClassDataList[0].GiaTri)
+                .student-image-submit
+                  .image-submit-btn
+                    button.search-btn.btn(id="submit-button" onclick="ThayDoiDiemDat()")
+                      | Xác nhận
+    script(src='/public/source/js/main.js')
+    script(src='/public/source/js/edit-student.js ')
+    script(src='/public/source/js/quydinh.js ')

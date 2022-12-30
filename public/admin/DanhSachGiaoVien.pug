@@ -1,0 +1,154 @@
+extends ../header.pug
+
+block title
+  title Quản Lý Danh Sách Giáo Viên
+
+block append css
+    link(rel='stylesheet' href='/public/source/css/students.css  ')
+    link(rel='stylesheet' href='/public/source/css/edit-student.css ')
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              h3.page-title Quản Lý Giáo Viên
+        // End: Search Bar
+        .student-form
+          .card
+            .card-table
+              .card-body
+                .card-body_head
+                  .card-body_header
+                    if(role == 'Admin')
+                      .card-body_header-icon
+                        a.btn(href='/admin/ThemTaiKhoan')
+                          i.fa-solid.fa-plus
+                .card-body_body
+                  .Data-Table
+                    .Data-Table-body
+                      .Table-body
+                        table.Table
+                          thead.student-thead
+                            tr.thead(role='row')
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='MaSo')
+                                | Mã Số
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='HoTen')
+                                | Họ Tên
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='GioiTinh')
+                                | Giới Tính
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='NgaySinh')
+                                | Ngày Sinh
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='SoDienThoai')
+                                | Số Điện Thoại
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='Email')
+                                | Email
+                              th.sorting.address(tabindex='0' rowspan='1' colspan='1' aria-label='DiaChi')
+                                | Địa Chỉ
+                              if(role == 'Admin')
+                                th.text-end.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='DiaChi')
+                                  | Chỉnh sửa
+                          tbody.student-tbody
+                            each user in ClassDataList
+                              - var date = new Date(user.NgSinh).toLocaleDateString("en-GB");
+                                                              
+                              tr.odd.table-normal(role='row', id=user.MaGV)
+                                td #{user.MaGV}
+                                td
+                                    a(href='') #{user.HoTen}
+                                td #{user.GioiTinh}
+                                td #{date}
+                                td +84756126896
+                                td #{user.Email}
+                                td #{user.DiaChi}
+                                if(role == 'Admin')
+                                  td.text-end
+                                    .action
+                                      - var functionName_1 = "XoaGiaoVien('" + user.MaGV + "')"
+                                      a.delete-btn(href='#',onclick=functionName_1)
+                                          i.fa-solid.fa-trash
+                                      - var functionName = 'LayThongTin(' + user.MaGV + ')';
+                                      a.edit-btn.js-edit-student(href='#', onclick=functionName)
+                                          i.fa-solid.fa-pen-to-square
+
+                    .Data-Table-footer
+    // Modal
+    .modal.js-modal
+      .student-form-edit.js-modal-content
+        .card
+          .card-table
+            .card-body-edit
+              .modal-close.js-modal-close
+                i.fa-solid.fa-xmark
+              form(id="edit-student-form")
+                .page-header-student-title
+                  h5.page-title Thông tin giáo viên
+                .row
+                  .edit-form-student
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Họ và tên 
+                          span.login-danger *
+                        input.form-control-edit(required='' type='text' placeholder='Nhập họ và tên...', id='HoTen')
+                    
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Giới tính
+                          span.login-danger *
+                        select.form-control-edit(required='' id='GioiTinh')
+                          option Nam
+                          option Nữ
+                          option Khác
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Ngày sinh
+                          span.login-danger *
+                        input.form-control-edit(required='' type='date' id='NgSinh')
+              
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Email
+                          span.login-danger *
+                        input.form-control-edit(required='' type='email' placeholder='Nhập email...' id='Email')
+                    
+                    .submit-form
+                      .form-group.local-form
+                        label
+                          | Địa chỉ
+                          span.login-danger *
+                        input.form-control-edit(required='' type='text' placeholder='Nhập địa chỉ...' id='DiaChi')
+                   
+                    .submit-form
+                      .form-group.local-form
+                        //- label
+                        //-   | Mã học sinh
+                        //-   span.login-danger *
+                        input.form-control-edit(required='' type='hidden' id='MaGV')
+
+
+                  .student-image
+                    label  Tải lên ảnh chân dung của giáo viên
+                    span.login-danger *
+                    .form-group
+                      .student-avatar
+                        img#avatar(src='/public/source/img/profile-avatar.png ' alt='avatar')
+                      .upload
+                        input#UploadImage(accept='image/*' required='' type='file' hidden='')
+                        label(for='UploadImage') Chọn tệp
+                .student-image-submit
+                  .image-submit
+                    button.search-btn.btn(id="submit-button" onclick="CapNhatThongTin()") 
+                      | Xác nhận
+
+    script(src='/public/source/js/main.js')
+    script(src='/public/source/js/edit-student.js ')
+    script(src='/public/source/js/teachers.js ')
+    script(src='/public/source/js/edit-teacher.js ')

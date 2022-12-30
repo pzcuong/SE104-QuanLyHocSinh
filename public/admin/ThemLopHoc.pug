@@ -1,0 +1,111 @@
+extends ../header.pug
+
+block title
+  title Thêm Lớp Học
+
+block append css
+    link(rel='stylesheet' href='/public/source/css/edit-classroom.css')
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              h3.page-title Thêm Lớp
+        .student-form
+          .card
+            .card-table
+              .card-body
+                form(id="formElem" method="dialog")
+                  .page-header-student-title
+                    h5.page-title Thông tin lớp
+                  .row
+                    .edit-form
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Mã số lớp học
+                            span.login-danger *
+                          input.form-control-edit(required='' type='text' placeholder='Nhập mã số lớp học...' name='MaLop')
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Tên lớp
+                            span.login-danger *
+                          input.form-control-edit(required='' type='text' placeholder='Nhập tên lớp...' name='TenLop')
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Khối
+                            span.login-danger *
+                          select.form-control-edit(required='' name="MaKhoiLop")
+                            option(value='K10') Khối 10
+                            option(value='K11') Khối 11
+                            option(value='K12') Khối 12
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Học Kỳ
+                            span.login-danger *
+                          select.form-control-edit(required='' name="HocKy" onchange="ThemLopHoc()")
+                            option(value='') Chọn học kỳ
+                            option(value='1') 1
+                            option(value='2') 2
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Năm Học
+                            span.login-danger *
+                          select.form-control-edit(required='' name="MaNamHoc")
+                            option(value='') Chọn năm học
+                           
+                  .student-image-submit
+                    .image-submit
+                      button.search-btn.btn(onclick="ThemLopHoc();return;") 
+                        | Xác nhận
+    script(src='/public/source/js/main.js')
+    script(src='/public/source/js/edit-student.js')
+
+    script. 
+        async function ThemLopHoc() {
+            var form = document.querySelector("#formElem");
+
+            data = {
+                MaLop: form.querySelector("input[name=MaLop]").value,
+                TenLop: form.querySelector("input[name=TenLop]").value,
+                HocKy: form.querySelector("select[name=HocKy]").value,
+                MaKhoiLop: form.querySelector("select[name=MaKhoiLop]").value,
+                MaNamHoc: form.querySelector("select[name=MaNamHoc]").value,
+            }
+
+            let response = await fetch('/admin/ThemLopHoc', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                    json: true
+            })
+
+            let text = await response.json(); 
+            
+            if (!data.MaNamHoc) {
+                let MaNamHoc = document.querySelector("select[name=MaNamHoc]");
+                // add option to MaNamHoc select
+                for (let i = 0; i < text.result.length; i++) {
+                    let option = document.createElement("option");
+                    option.value = text.result[i].MaNamHoc;
+                    option.text = text.result[i].Nam1 + " - " + text.result[i].Nam2;
+                    MaNamHoc.add(option);   
+                }
+                return;
+            }
+
+            alert (text.message);
+            if (text.redirect) 
+                window.location.href = text.redirect;
+        }

@@ -1,0 +1,133 @@
+extends ../header.pug
+
+block title 
+    title Báo Cáo Học Kỳ
+
+block append css
+    link(rel='stylesheet' href='/public/source/css/baocaohocky.css ')
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              h3.page-title Báo Cáo Học Kỳ
+        // Start: Search Bar
+        .student-group-form
+          .search-group
+            .submit-form
+              .submit-form-student.submit
+                .form-group.local-form
+                  select#HocKy.form-control-edit-btn(required='' onchange='LayThongTin()')
+                    option(value='') Chọn học kỳ
+                    option(value='1') Học kỳ 1
+                    option(value='2') Học kỳ 2
+              .submit-form-student.submit
+                .form-group.local-form
+                  select#NamHoc.form-control-edit-btn(required='' onchange='LayThongTin()')
+                    option(value='') Chọn năm học
+
+            .search-student-btn
+              .search-btn
+                button.btn(type='button' onclick='LayThongTin()') Tìm Kiếm
+        
+        //Hidden class form
+        .subject-form(style='display: none')
+          .card
+            .card-table
+              .card-body
+                .card-body_body
+                  .Data-Table
+                    .Data-Table-body
+                      .Table-body
+                        table.Table#mytable
+                          thead.subject-thead
+                            tr.thead(role='row')
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='STT')
+                                | STT
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='Lop')
+                                | Lớp
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='SiSo')
+                                | Sĩ Số
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='SoLuongDat')
+                                | Số Lượng Đạt
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='TiLe')
+                                | Tỉ Lệ
+                          tbody.subject-tbody
+                            
+                    .Data-Table-footer
+    script(src='/public/source/js/main.js')
+    script(src='/public/source/js/edit-student.js ')
+    script(src='/public/source/js/students.js ')
+
+    script.
+      async function LayThongTin() {
+        data = {
+          HocKy: document.getElementById("HocKy").value,
+          NamHoc: document.getElementById("NamHoc").value,
+        }
+        
+        let url = window.location.href;
+
+        let response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          json: true
+        })
+
+        let result = await response.json();
+
+        console.log(result)
+
+        if(data.NamHoc == null || data.NamHoc == "") {
+          let SelectNamHoc = document.getElementById("NamHoc");
+          for (let i = 0; i < result.result.length; i++) {
+            let option = document.createElement("option");
+            option.text = `${result.result[i].Nam1} - ${result.result[i].Nam2}` ;
+            option.value = result.result[i].Nam2;
+            SelectNamHoc.add(option);
+          }
+          return false;
+        }
+
+        if (result.result[0].length == 0) {
+          alert("Không có dữ liệu");
+          return false;
+        }
+
+        let form = document.getElementsByClassName("subject-form");
+        form[0].style.display = "block";
+
+        let table = document.getElementsByClassName("Table")
+        let tbody = document.getElementsByClassName("subject-tbody");
+
+        for (let i = 0; i < result.result[0].length; i++) {
+          let tr = document.createElement("tr");
+          let td1 = document.createElement("td");
+          let td2 = document.createElement("td");
+          let td3 = document.createElement("td");
+          let td4 = document.createElement("td");
+          let td5 = document.createElement("td");
+
+          td1.innerHTML = i + 1;
+          td2.innerHTML = result.result[0][i].TenLop;
+          td3.innerHTML = result.result[0][i].SiSo;
+          td4.innerHTML = result.result[0][i].SoLuongDat;
+          td5.innerHTML = result.result[0][i].SoLuongDat / result.result[0][i].SiSo * 100 + "%";
+
+          tr.appendChild(td1);
+          tr.appendChild(td2);
+          tr.appendChild(td3);
+          tr.appendChild(td4);
+          tr.appendChild(td5);
+
+          tbody[0].appendChild(tr);
+        }
+      }

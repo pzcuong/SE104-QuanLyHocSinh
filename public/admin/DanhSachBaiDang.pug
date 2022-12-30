@@ -1,0 +1,86 @@
+extends ../header.pug
+
+block title
+  title Quản Lý Danh Sách Thông Báo
+
+block append css
+    link(rel='stylesheet' href='/public/source/css/notice-list.css  ')
+
+block append script
+    script(src='/public/source/js/script.js')
+    script(src='/public/source/js/BaiDang.js')
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              h3.page-title Danh Sách Thông Báo
+        .student-group-form
+          .search-group
+            .search-bar
+              .form-group
+                input.form-control(id='searchbox' onkeyup='search()' type='text' placeholder='Tìm kiếm ...')
+            .search-student-btn
+              .search-btn
+                button.btn(type='button') Tìm Kiếm
+        .student-form
+          .card
+            .card-table
+              .card-body
+                .card-body_head
+                  .card-body_header
+                    .page-header-student-title
+                      h3.page-title Thông Báo
+                    .card-body_header-icon
+                      a.btn(href='/admin/ThemBaiDang')
+                        i.fa-solid.fa-plus
+                .card-body_body
+                  .Data-Table
+                    .Data-Table-body
+                      .Table-body
+                        table.Table
+                          thead.student-thead
+                            tr.thead(role='row')
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='MaBaiDang')
+                                | Tên Thông Báo
+                              th.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='NgayDang')
+                                | Ngày đăng
+                              th.text-end.sorting(tabindex='0' rowspan='1' colspan='1' aria-label='ChinhSua')
+                                | Chỉnh sửa
+                          tbody.student-tbody
+                            each BaiDang in ThongTin
+                                - var NgayDang = new Date(BaiDang.NgayDang).toLocaleDateString('vi-VN')
+
+                                tr.odd.table-normal.table-data(role='row' id=BaiDang.MaBaiDang)
+                                    td #{BaiDang.TieuDe}
+                                    td #{NgayDang}
+                                    td.text-end
+                                        .action
+                                            - var functionName = "XoaBaiDang('" + BaiDang.MaBaiDang + "')"
+                                            a.delete-btn(onclick=functionName)
+                                                i.fa-solid.fa-trash
+                                            a.edit-btn(href='/admin/ThemBaiDang')
+                                                i.fa-solid.fa-pen-to-square
+                    .Data-Table-footer
+
+    script(src='/public/source/js/main.js')
+    script(src='/public/source/js/edit-student.js ')
+    script(src='/public/source/js/students.js ')
+    script. 
+      function search() {
+        let input = document.getElementById('searchbox').value
+        input=input.toLowerCase();
+        let x = document.getElementsByClassName('table-data');
+          
+        for (i = 0; i < x.length; i++) { 
+          if(!x[i].innerHTML.toLowerCase().includes(input)) 
+            x[i].style.display="none";
+          else 
+            x[i].style.display="table-row";                 
+        }
+      }

@@ -1,0 +1,107 @@
+extends ../header.pug
+
+block title 
+    title Tạo mới người dùng
+
+block append css
+    link(rel='stylesheet' href='/public/source/css/edit-student.css')
+
+block append script
+    script(src="/public/source/js/ThemTaiKhoan.js") 
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              h3.page-title Tạo mới người dùng
+        .student-form
+          .card
+            .card-table
+              .card-body
+                form(id="form")
+                  .page-header-student-title
+                    h5.page-title Thông tin cơ bản
+                  .row
+                    .edit-form
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Họ và tên
+                            span.login-danger *
+                          input.form-control-edit(required='' type='text' placeholder='Nhập họ và tên...' id='HoTen')
+                    
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Giới tính
+                            span.login-danger *
+                          select.form-control-edit(required='' id='GioiTinh')
+                            option Nam
+                            option Nữ
+                            option Khác
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Ngày sinh
+                            span.login-danger *
+                          input.form-control-edit(required='' type='date' id = 'NgSinh')
+               
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Email
+                            span.login-danger *
+                          input.form-control-edit(required='' type='email' placeholder='Nhập email...' id='Email')
+                      
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Địa chỉ
+                            span.login-danger *
+                          input.form-control-edit(required='' type='text' placeholder='Nhập địa chỉ...' id='DiaChi')
+                      
+
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Mã số người dùng
+                            span.login-danger *
+                          input.form-control-edit(required='' type='text' placeholder='Nhập mã số người dùng...' id="MaND")
+
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Mã lớp học
+                            span.login-danger *
+                          input.form-control-edit(required='' type='text' placeholder='Nhập mã lớp học...' id="MaLop")
+
+                      .submit-form
+                        .form-group.local-form
+                          label
+                            | Loại người dùng
+                            span.login-danger *
+                          select.form-control-edit(required='' id='Role')
+                            option(value="HocSinh") Học Sinh
+                            option(value="GiaoVien") Giáo Viên
+                            option(value="Admin") Quản Trị Viên
+
+                    .student-image
+                      label  Tải lên ảnh chân dung của người dùng
+                      span.login-danger *
+                      .form-group
+                        .student-avatar
+                          img#avatar(src='/public/source/img/profile-avatar.png' alt='avatar')
+                        .upload
+                          input#UploadImage(accept='image/*' required='' type='file' hidden='')
+                          label(for='UploadImage') Chọn tệp
+                  .student-image-submit
+                    .image-submit
+                      button.search-btn.btn#btnSave(onclick="ThemTaiKhoan()")
+                        | Xác nhận
+    script(src='/public/source/js/main.js')
+    script(src='/public/source/js/edit-student.js')

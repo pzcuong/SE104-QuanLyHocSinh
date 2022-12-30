@@ -1,0 +1,127 @@
+extends ../header.pug
+
+block title
+  title #{user.HoTen} - #{role_encode}
+
+block append css
+  link(rel='stylesheet' href='/public/source/fonts/fontawesome-free-6.2.0-web/css/all.css')
+  link(rel='stylesheet' href='/public/source/css/view-student.css')
+
+block append script
+  script(src='https://kit.fontawesome.com/7b85820244.js' crossorigin='anonymous')
+
+block content        
+  section.home-section
+    .home-content
+      i.fa-solid.fa-bars
+  .page-wrapper
+    .content
+      .student-form-view
+        .card
+          .card-table
+            .card-body
+              div
+                .row
+                  .page-header-student-title
+                    h5.page-title Hồ sơ #{role_encode}
+                  .student-profile-head
+                    .profile-bg-img
+                      img(src='/public/source/img/profile-bg.jpg' alt='profile')
+                    .row
+                      .profile-name
+                        .profile-user
+                          .profile-user-img
+                            img(src='/public/source/img/profile-user.jpg' alt='profile user')
+                          .user-name
+                            h4 #{user.HoTen}
+                  .row-user
+                    .student-detail
+                      .student-detail-personal
+                        .card-user
+                          .card-body-user
+                            .heading-detail
+                              h4 Personal Detail:
+                            .personal-activity
+                              .personal-icon
+                                i.fa-solid.fa-user
+                              .view-personal
+                                h4 Họ Tên
+                                h5 #{user.HoTen}
+                            .personal-activity
+                              .personal-icon
+                                i.fa-solid.fa-building
+                              .view-personal
+                                h4 Lớp
+                                h5 10A1
+                            .personal-activity
+                              .personal-icon
+                                i.fa-solid.fa-user
+                              .view-personal
+                                h4 Giới Tính
+                                h5 #{user.GioiTinh}
+                            .personal-activity
+                              .personal-icon
+                                i.fa-solid.fa-calendar-days
+                              .view-personal
+                                h4 Ngày Sinh
+                                - var date = new Date(user.NgSinh);
+                                - var date = (date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1)) + '/' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' + date.getFullYear();
+
+                                h5 #{date} 
+                            .personal-activity
+                              .personal-icon
+                                i.fa-solid.fa-phone
+                              .view-personal
+                                h4 Số Điện Thoại
+                                h5 +84478125369
+                            .personal-activity
+                              .personal-icon
+                                i.fa-solid.fa-envelope
+                              .view-personal
+                                h4 Email
+                                h5 #{user.Email}
+                            .personal-activity
+                              .personal-icon
+                                i.fa-sharp.fa-solid.fa-location-dot
+                              .view-personal
+                                h4 Địa Chỉ
+                                h5 #{user.DiaChi}
+                    .user-about
+                      .user-about-personal
+                        .card-user
+                          .card-body-user
+                            //- .heading-detail
+                            //-   h4 Về em
+                            .user-paragraph
+                              h5 Xin chào, mình là #{user.HoTen}
+                              p
+                                | Chào các bạn, mình là #{user.HoTen}, học sinh
+                                | lớp 10A1, trường THPT ABC. Gia đình mình có
+                                | năm người. Bố mình là Hà Huy Hoàng, bố làm kỹ
+                                | sư xây dựng. Ngôi nhà cả gia đình mình đang
+                                | sống chính là do bố thiết kế. Mẹ mình là
+                                | Nguyễn Thị Hoa là một giáo viên tiểu học. Anh
+                                | trai của mình đang là học sinh lớp 12. Năm
+                                | nay, anh sẽ bước vào kì thi Đại học. Mình rất
+                                | mong anh có thể đỗ vào trường Đại học Bách
+                                | Khoa Hà Nội như anh mong muốn. Màu sắc mà mình
+                                | yêu thích là màu đỏ và màu trắng. Môn học mà
+                                | mình yêu thích là môn Ngữ Văn. Bởi môn học này
+                                | đem đến những câu chuyện hay, những bài học lý
+                                | thú, những con người, số phận mình chưa được
+                                | gặp và muốn sẻ chia. Mình cũng thích những môn
+                                | khoa học nữa, đó là thế giới để mình thấy sự
+                                | phát triển, sinh sôi. Nên sau này lớn mình rất
+                                | mong sẽ được làm một nhà khoa học để thỏa
+                                | thích niềm đam mê tìm hiểu về thế giới và ghi
+                                | lại những điều mình từng gặp. Đây là những lời
+                                | giới thiệu về bản thân để các bạn hiểu mình
+                                | hơn. Cảm ơn các thầy/cô đã lắng nghe.
+                            .user-paragraph
+                              h5 Học Vấn
+                              .educate-year
+                                h6 2009 - 2012
+                                p Trường Mầm Non Thành Phố IJK
+                                h6 2012 - 2021
+                                p Trường Tiểu Học và Trung Học Cơ Sở XYZ
+  script(src='/public/source/js/main.js')

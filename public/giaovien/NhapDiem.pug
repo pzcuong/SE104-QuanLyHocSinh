@@ -1,0 +1,207 @@
+extends ../header.pug
+
+block title
+  title Nhập điểm học sinh
+
+block css
+    link(href='css/bootstrap.min.css' rel='stylesheet')
+    link(rel='stylesheet' href='/public/source/css/style.css')
+    link(rel='stylesheet' href='/public/source/fonts/fontawesome-free-6.2.0-web/css/all.css')
+    link(href='https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.35.1/handsontable.min.css' rel='stylesheet')
+    link(rel='stylesheet' href='/public/source/css/NhapDiem.css')
+
+block append script
+    script(src='js/jquery.min.js')
+    script(src='js/bootstrap.min.js')
+    script(type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.35.1/handsontable.min.js')
+
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      main.container(role='main')
+        div
+          h1 Điểm
+        .Bd-content
+          span
+            strong Học kỳ: 
+            select#HocKy(onchange='LayThongTin()')
+              option(value='') Chọn học kỳ
+              option(value='1') Học kỳ 1
+              option(value='2') Học kỳ 2
+          span
+            strong Năm học: 
+            select#NamHoc(onchange='LayThongTin()')
+              option(value='') Chọn năm học
+          span 
+            strong Lớp: 
+            select#Lop(onchange='LayThongTin()')
+              option(value='') Chọn lớp
+          span
+            strong Môn học: 
+            select#MonHoc(onchange='LayThongTin()')
+              option(value='') Chọn môn học
+          
+          .container.welcome-div
+            #employee
+
+          //- Hide button in style 
+          button#btnSave(hidden onclick="LuuDiem()") Lưu điểm
+          button#btnTinhDTB(hidden onclick="TinhDTB()") Tính điểm trung bình
+
+    script(src='/public/source/js/main.js')
+   
+    // button onclick
+    script.
+      async function LuuDiem () {
+        document.getElementById("btnSave").disabled = true;
+        document.getElementById("btnSave").innerHTML = "Đang lưu điểm";
+        document.getElementById("btnSave").style.opacity = "0.5";
+
+        let ThongTinDiem = {
+          HocKy: document.getElementById("HocKy").value,
+          NamHoc: document.getElementById("NamHoc").value,
+          MaMH: document.getElementById("MonHoc").value,
+          Diem: data
+        }
+        console.log("Save")
+
+        console.log(data);
+        
+        let url = window.location.href;
+        let response = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(ThongTinDiem),
+          json: true
+        })
+
+        let result = await response.json();
+        console.log(result)
+        alert(result.message)
+        document.getElementById("btnSave").disabled = false;
+        document.getElementById("btnSave").innerHTML = "Lưu điểm";
+        document.getElementById("btnSave").style.opacity = "1";
+      }
+
+    script.
+      async function LayThongTin() {
+        //Disable button
+        //- document.getElementById("GetData").disabled = true;
+        //- document.getElementById("GetData").innerHTML = "Đang tải...";
+
+        data = {
+          HocKy: document.getElementById("HocKy").value,
+          NamHoc: document.getElementById("NamHoc").value,
+          MaMH: document.getElementById("MonHoc").value
+        }
+        
+        let url = window.location.href;
+
+        let response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          json: true
+        })
+
+        let result = await response.json();
+
+        console.log(result)
+
+        //Enable button
+        //- document.getElementById("GetData").disabled = false;
+        //- document.getElementById("GetData").innerHTML = "Lấy thông tin";
+
+        if(data.NamHoc == null || data.NamHoc == "") {
+          let SelectNamHoc = document.getElementById("NamHoc");
+          for (let i = 0; i < result.result.length; i++) {
+            let option = document.createElement("option");
+            option.text = `${result.result[i].Nam1} - ${result.result[i].Nam2}` ;
+            option.value = result.result[i].Nam2;
+            SelectNamHoc.add(option);
+          }
+          return false;
+        }
+
+        if(data.MaMH == null || data.MaMH == "") {
+          let SelectMonHoc = document.getElementById("MonHoc");
+          for (let i = 0; i < result.result.length; i++) {
+            let option = document.createElement("option");
+            option.text = result.result[i].TenMH;
+            option.value = result.result[i].MaMH;
+            SelectMonHoc.add(option);
+          }
+          return false;
+        }
+
+        let button = document.getElementById("btnSave");
+        let buttonDTB = document.getElementById("btnTinhDTB");
+        button.hidden = false;
+        buttonDTB.hidden = false;
+
+        console.log(result.result)
+        data = []
+
+        for(let i = 0; i < result.result.length; i++) {
+          if (result.result[i].DiemTB == null) {
+            result.result[i].DiemTB = 0;
+          }
+          data.push({
+            "MSHS": result.result[i].MaHS, 
+            "HoTen": result.result[i].HoTen, 
+            "DM": result.result[i].DM, 
+            "KT15P": result.result[i].KT15P, 
+            "KT1T": result.result[i].KT1T, 
+            "KTGK": result.result[i].KTGK, 
+            "KTCK": result.result[i].KTCK,
+            "DiemTB": result.result[i].DiemTB.toFixed(2)
+          })
+        }
+
+        console.log(data)
+        var container = document.getElementById('employee');
+        var hot = new Handsontable(container, {
+          data: data,
+          rowHeaders: true,
+          colHeaders: false,
+          colHeaders: ["MSHS", "Họ và tên", "Điểm miệng", "Điểm 15 phút", "Điểm 1 tiết", "Điểm GK", "Điểm CK", "Điểm TB"],
+          columnSorting: true,
+          sortIndicator: true,
+          columns: [
+            {data: 'MSHS', readOnly: true},
+            {data: 'HoTen', readOnly: true},
+            {data: 'DM'},
+            {data: 'KT15P'},
+            {data: 'KT1T'},
+            {data: 'KTGK'},
+            {data: 'KTCK'},
+            {data: 'DiemTB', readOnly: true}
+          ],
+        });
+      }
+    
+      async function TinhDTB() {
+        let url = window.location.href;
+        //- url format: http://localhost:8080/user/NhapDiem/TN101/\
+        console.log(url)
+        let MaLop = url.substring(url.lastIndexOf('/') + 1, url.length - 6);
+        let response = await fetch('/user/TinhDiemTrungBinh/' + MaLop, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({MaLop: MaLop}),
+          json: true
+        })
+
+        let result = await response.json();
+        console.log(result)
+        alert(result.message)
+      }
