@@ -1,0 +1,233 @@
+extends ../header.pug
+
+block title
+  title Thêm học sinh lên lớp #{ClassDataList[0].TenLop} 
+
+block append script
+  script(src='https://kit.fontawesome.com/7b85820244.js' crossorigin='anonymous')
+
+block append css
+  link(rel='stylesheet' href='/public/source/css/classroom.css  ')
+  link(rel='stylesheet' href='/public/source/css/edit-classroom.css ')
+  link(rel='stylesheet' href='/public/source/css/notice.css')
+  link(rel='stylesheet' href='/public/source/fonts/fontawesome-free-6.2.0-web/css/all.css')
+
+block content
+    section.home-section
+      .home-content
+        i.fa-solid.fa-bars
+    .page-wrapper
+      .content
+        .page-header
+          .page-header-title
+            .page-header-student-title
+              //h3.page-title(style="margin-bottom: 10px;")
+               | Danh Sách Lớp #{ClassDataList[0].TenLop} - Sỉ số: #{ClassDataList[0].SiSo}
+              h3(style="margin-bottom: 10px;")
+                | Danh Sách Học Sinh Chuyển Lên Lớp Mới. Vui lòng chọn học sinh cần chuyển lên lớp mới
+              h4(style="margin-bottom: 10px; color: red;")
+                | Lưu ý: <br/>
+                | - Học sinh có điểm trung bình năm >= 5 mới được chuyển lên lớp mới. Mặc định học sinh có điểm trung bình năm < 5 sẽ không được chuyển lên lớp mới <br/>
+                | - Để chuyển học sinh lên lớp mới, vui lòng chọn học sinh cần chuyển lên lớp mới và nhấn nút "Chuyển lên lớp mới"
+            
+              h3(style="margin-bottom: 10px") Lớp cũ: #{ClassDataList[0].TenLop} - Sỉ số: #{ClassDataList[0].SiSo}
+              - let SoLuongHocSinhChuyenLenLopMoi = 0;
+              each HocSinh in ClassDataList
+                if(HocSinh.DTBNam >= 5)
+                  - SoLuongHocSinhChuyenLenLopMoi++;
+
+              h3 Lớp mới - Số lượng học sinh đủ yêu cầu chuyển lên lớp mới: #{SoLuongHocSinhChuyenLenLopMoi}
+              h4(style="margin-bottom: 10px; color: red;") Vui lòng chọn lớp mới (chọn từ danh sách lớp đã có sẵn)
+
+              span(style='margin-left: 0px')
+                strong Học kỳ: 
+                select#HocKy(onchange='LayThongTin()')
+                    option(value='') Chọn học kỳ
+                    option(value='1') Học kỳ 1
+                    option(value='2') Học kỳ 2
+              span(style='margin-left: 20px')
+                strong Năm học: 
+                select#NamHoc(onchange='LayThongTin()')
+                    option(value='') Chọn năm học
+              span(style='margin-left: 20px')
+                strong Lớp: 
+                select#Lop(onchange='LayThongTin()')
+                    option(value='') Chọn lớp
+
+        .student-form
+          .card
+            .card-table
+              .card-body
+                .card-body_body
+                  .Data-Table
+                    .Data-Table-body
+                      .Table-body
+                        table.Table
+                          thead.student-thead
+                            tr.thead(role='row')
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='STT')
+                                | Đăng ký
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='STT')
+                                | Mã học sinh
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='HoTen')
+                                | Họ và tên
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='GioiTinh')
+                                | Giới tính
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='NgSinh')
+                                | Năm sinh
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='DiaChi')
+                                | Địa chỉ
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='ChucNang')
+                                | Điểm trung bình
+                              th.sorting_themhs(tabindex='0' rowspan='1' colspan='1' aria-label='GhiChu')
+                                | Ghi chú
+
+                          tbody.student-tbody
+                            - var STT = 1;
+                            each HocSinh in ClassDataList
+                                tr.odd.table-normal(role='row')
+                                    td
+                                        if(HocSinh.DTBNam >= 5)
+                                            input(type='checkbox' name='check' value=HocSinh.MaHS checked)
+                                        else
+                                            input(type='checkbox' name='check' value=HocSinh.MaHS)
+                                    td #{HocSinh.MaHS}
+                                    td #{HocSinh.HoTen}
+                                    td #{HocSinh.GioiTinh}
+                                    - var NgSinh = new Date(HocSinh.NgSinh)
+                                    - var NgSinh = NgSinh.toLocaleDateString('en-GB')
+                                    td #{NgSinh}
+                                    td #{HocSinh.DiaChi}
+                                    // Round to 2 decimal places
+                                    - HocSinh.DTBNamFix = Math.round(HocSinh.DTBNam * 100) / 100
+                                    if(HocSinh.DTBNam >= 5)
+                                        td(style="color: green") #{HocSinh.DTBNamFix}
+                                    else if(HocSinh.DTBNam == 0)
+                                        td(style="color: black") Chưa có điểm
+                                    else
+                                        td(style="color: red") #{HocSinh.DTBNam} 
+                                        td(style="color: red") Chưa đủ điều kiện chuyển lên lớp mới
+                                    //- // td #{HocSinh.DTBNam}
+                                    //- td round(HocSinh.DTBNam, 2)
+
+                    .Data-Table-footer
+        a.search-btn.btn#btnSave(onclick="ThemHocSinh(); return false;" style="margin-top: 10px; margin-bottom: 10px;") 
+            | Chuyển lên lớp mới
+
+    script(src='/public/source/js/main.js')
+    script(src='/public/source/js/edit-student.js ')
+    //- script(src='/public/source/js/students.js ')
+    script.
+      async function LayThongTin() {
+        //Disable button
+        //- document.getElementById("GetData").disabled = true;
+        //- document.getElementById("GetData").innerHTML = "Đang tải...";
+
+        data = {
+          HocKy: document.getElementById("HocKy").value,
+          NamHoc: document.getElementById("NamHoc").value,
+          MaLop: document.getElementById("Lop").value,
+          DanhSachHocSinh: []
+        }
+
+        // Get all checked checkboxes
+        let checkboxes = document.querySelectorAll('input[name="check"]:checked').forEach(checkbox => {
+          data.DanhSachHocSinh.push(checkbox.value)
+        });
+        
+        let url = window.location.href;
+
+        let response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          json: true
+        })
+
+        let result = await response.json();
+
+        console.log(result)
+
+        //Enable button
+        //- document.getElementById("GetData").disabled = false;
+        //- document.getElementById("GetData").innerHTML = "Lấy thông tin";
+
+        if(data.NamHoc == null || data.NamHoc == "") {
+          let SelectNamHoc = document.getElementById("NamHoc");
+          for (let i = 0; i < result.result.length; i++) {
+            let option = document.createElement("option");
+            option.text = `${result.result[i].Nam1} - ${result.result[i].Nam2}` ;
+            option.value = result.result[i].Nam2;
+            SelectNamHoc.add(option);
+          }
+          return false;
+        }
+
+        if(data.MaLop == null || data.MaLop == "") {
+          let SelectLop = document.getElementById("Lop");
+          console.log(result.result)
+          for (let i = 0; i < result.result.recordset.length; i++) {
+            let option = document.createElement("option");
+            option.text = `${result.result.recordset[i].MaLop} - ${result.result.recordset[i].TenLop}` ;
+            option.value = result.result.recordset[i].MaLop;
+            SelectLop.add(option);
+          }
+          return false;
+        }
+      }
+
+      async function ThemHocSinh() {
+        //Disable button
+        //- document.getElementById("GetData").disabled = true;
+        //- document.getElementById("GetData").innerHTML = "Đang tải...";
+
+        data = {
+          HocKy: document.getElementById("HocKy").value,
+          NamHoc: document.getElementById("NamHoc").value,
+          MaLop: document.getElementById("Lop").value,
+          DanhSachHocSinh: []
+        }
+
+        // Get all checked checkboxes
+        let checkboxes = document.querySelectorAll('input[name="check"]:checked').forEach(checkbox => {
+          data.DanhSachHocSinh.push(checkbox.value)
+        });
+
+        if (data.HocKy == null || data.HocKy == "") {
+          alert("Vui lòng chọn học kỳ!")
+          return false;
+        }
+
+        if (data.NamHoc == null || data.NamHoc == "") {
+          alert("Vui lòng chọn năm học!")
+          return false;
+        }
+
+        if (data.MaLop == null || data.MaLop == "") {
+          alert("Vui lòng chọn lớp!")
+          return false;
+        }
+
+        if (data.DanhSachHocSinh.length == 0) {
+          alert("Vui lòng chọn học sinh để chuyển lên lớp mới!")
+          return false;
+        }
+        
+        let url = window.location.href;
+
+        let response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          json: true
+        })
+
+        let result = await response.json();
+
+        console.log(result)
+        alert(result.message)
+      }

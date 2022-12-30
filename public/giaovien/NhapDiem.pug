@@ -25,7 +25,7 @@ block content
         div
           h1 Điểm
         .Bd-content
-          span
+          span(style='margin-left: 0px')
             strong Học kỳ: 
             select#HocKy(onchange='LayThongTin()')
               option(value='') Chọn học kỳ
@@ -43,6 +43,15 @@ block content
             strong Môn học: 
             select#MonHoc(onchange='LayThongTin()')
               option(value='') Chọn môn học
+          span
+            strong <br/> Loại hình kiểm tra cần nhập điểm: 
+            select#MaLHKT(onchange='LayThongTin()')
+              option(value='KT15P') Kiểm tra 15 phút
+              option(value='KT1T') Kiểm tra 1 tiết
+              option(value='KTGK') Kiểm tra giữa kỳ
+              option(value='KTCK') Kiểm tra cuối kỳ
+              option(value='XemTatCa') Xem tất cả
+
           
           .container.welcome-div
             #employee
@@ -63,7 +72,9 @@ block content
         let ThongTinDiem = {
           HocKy: document.getElementById("HocKy").value,
           NamHoc: document.getElementById("NamHoc").value,
+          Lop: document.getElementById("Lop").value,
           MaMH: document.getElementById("MonHoc").value,
+          MaLHKT: document.getElementById("MaLHKT").value,
           Diem: data
         }
         console.log("Save")
@@ -97,7 +108,9 @@ block content
         data = {
           HocKy: document.getElementById("HocKy").value,
           NamHoc: document.getElementById("NamHoc").value,
-          MaMH: document.getElementById("MonHoc").value
+          MaLop: document.getElementById("Lop").value,
+          MaMH: document.getElementById("MonHoc").value,
+          MaLHKT: document.getElementById("MaLHKT").value
         }
         
         let url = window.location.href;
@@ -130,6 +143,17 @@ block content
           return false;
         }
 
+        if(data.MaLop == null || data.MaLop == "") {
+          let SelectLop = document.getElementById("Lop");
+          for (let i = 0; i < result.result.length; i++) {
+            let option = document.createElement("option");
+            option.text = `${result.result[i].MaLop} - ${result.result[i].TenLop}` ;
+            option.value = result.result[i].MaLop;
+            SelectLop.add(option);
+          }
+          return false;
+        }
+
         if(data.MaMH == null || data.MaMH == "") {
           let SelectMonHoc = document.getElementById("MonHoc");
           for (let i = 0; i < result.result.length; i++) {
@@ -141,6 +165,44 @@ block content
           return false;
         }
 
+        if(data.MaLHKT == 'XemTatCa') {
+          for(let i = 0; i < result.result.length; i++) {
+            if (result.result[i].DiemTB == null) 
+              result.result[i].DiemTB = 0;
+            data.push({
+              "MSHS": result.result[i].MaHS, 
+              "HoTen": result.result[i].HoTen, 
+              "DM": result.result[i].DM, 
+              "KT15P": result.result[i].KT15P, 
+              "KT1T": result.result[i].KT1T, 
+              "KTGK": result.result[i].KTGK, 
+              "KTCK": result.result[i].KTCK,
+              "DiemTB": result.result[i].DiemTB.toFixed(2)
+            })
+          }
+
+          console.log(data)
+          var container = document.getElementById('employee');
+          var hot = new Handsontable(container, {
+            data: data,
+            rowHeaders: true,
+            colHeaders: false,
+            colHeaders: ["MSHS", "Họ và tên", "Điểm miệng", "Điểm 15 phút", "Điểm 1 tiết", "Điểm GK", "Điểm CK", "Điểm TB"],
+            columnSorting: true,
+            sortIndicator: true,
+            columns: [
+              {data: 'MSHS', readOnly: true},
+              {data: 'HoTen', readOnly: true},
+              {data: 'DM'},
+              {data: 'KT15P'},
+              {data: 'KT1T'},
+              {data: 'KTGK'},
+              {data: 'KTCK'},
+              {data: 'DiemTB', readOnly: true}
+            ],
+          });
+        }
+
         let button = document.getElementById("btnSave");
         let buttonDTB = document.getElementById("btnTinhDTB");
         button.hidden = false;
@@ -149,6 +211,9 @@ block content
         console.log(result.result)
         data = []
 
+        let MaLHKT = document.getElementById("MaLHKT").value;
+        console.log(MaLHKT)
+
         for(let i = 0; i < result.result.length; i++) {
           if (result.result[i].DiemTB == null) {
             result.result[i].DiemTB = 0;
@@ -156,12 +221,12 @@ block content
           data.push({
             "MSHS": result.result[i].MaHS, 
             "HoTen": result.result[i].HoTen, 
-            "DM": result.result[i].DM, 
-            "KT15P": result.result[i].KT15P, 
-            "KT1T": result.result[i].KT1T, 
-            "KTGK": result.result[i].KTGK, 
-            "KTCK": result.result[i].KTCK,
-            "DiemTB": result.result[i].DiemTB.toFixed(2)
+            "02": result.result[i].KT15P, 
+            "02": result.result[i].KT15P, 
+            "03": result.result[i].KT15P, 
+            "04": result.result[i].KT15P, 
+            "05": result.result[i].KT15P,
+            //- "DiemTB": result.result[i].DiemTB.toFixed(2)
           })
         }
 
@@ -171,19 +236,20 @@ block content
           data: data,
           rowHeaders: true,
           colHeaders: false,
-          colHeaders: ["MSHS", "Họ và tên", "Điểm miệng", "Điểm 15 phút", "Điểm 1 tiết", "Điểm GK", "Điểm CK", "Điểm TB"],
+          colHeaders: ["MSHS", "Họ và tên", data.MaLHKT],
           columnSorting: true,
           sortIndicator: true,
           columns: [
             {data: 'MSHS', readOnly: true},
             {data: 'HoTen', readOnly: true},
-            {data: 'DM'},
-            {data: 'KT15P'},
-            {data: 'KT1T'},
-            {data: 'KTGK'},
-            {data: 'KTCK'},
-            {data: 'DiemTB', readOnly: true}
+            {data: '01'},
+            {data: '02'},
+            {data: '03'},
+            {data: '04'},
+            {data: '05'},
+            //- {data: 'DiemTB', readOnly: true}
           ],
+          //- mergeCells: [{ row: 0, col: 2, rowspan: 2, colspan: 2 }]
         });
       }
     

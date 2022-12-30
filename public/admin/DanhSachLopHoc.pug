@@ -92,6 +92,9 @@ block content
                                             - var functionName = "XemThongTinLop('" + LopHoc.MaLop + "')"
                                             a.edit-btn.js-edit-student(href='#' onclick=functionName)
                                                 i.fa-solid.fa-pen-to-square
+                                            - var urlLink = "/admin/ThemHocSinhLenLop/" + LopHoc.MaLop + "/"
+                                            a.edit-btn.js-edit-student(href=urlLink )
+                                                i.fa-solid.fa-level-up
 
                     .Data-Table-footer
     // Modal

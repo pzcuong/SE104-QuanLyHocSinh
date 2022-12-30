@@ -39,7 +39,7 @@ router.route('/LopHoc')
 	.get(isAuth, userController.getAllClass);
 
 	
-router.route('/NhapDiem/:MaLop/')
+router.route('/NhapDiem/')
 	.get(isAuthGiaoVien, async (req, res) => {
 		console.log(req.user);
 		req.MaLop = req.params.MaLop;
