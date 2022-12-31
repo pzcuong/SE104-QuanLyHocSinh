@@ -9,16 +9,21 @@ Vì thế việc thay đổi giữa quản lý trực tiếp và quản lý tr�
 
 ## [](https://github.com/pzcuong/QuanLyHocSinh/tree/master#t%C3%ADnh-n%C4%83ng)Tính năng
 
--   Tiếp nhận học sinh (Admin)
--   Tiếp nhận giáo viên (Admin)
--   Xếp lớp (Admin)
--   Tra cứu thông tin học sinh (Giáo viên, Admin)
--   Tra cứu lớp học (Giáo viên, Admin)
--   Thay đổi thông tin cá nhân (Giáo viên, Admin, Học sinh)
--   Thêm bảng điểm môn học (Giáo viên, Học sinh)
--   Xem bảng điểm môn học (Giáo viên, Admin, Học sinh)
--   Đăng bài đăng thông báo quan trọng (Giáo viên, Admin)
--   Xem thông báo, tin tức quan trọng (Giáo viên, Admin, Học sinh)
+- Tiếp nhận học sinh
+- Tiếp nhận giáo viên
+- Lập danh sách lớp
+- Thêm giáo viên vào lớp
+- Thêm môn học vào lớp
+- Tra cứu học sinh
+- Tra cứu lớp học
+- Quản lý môn học
+- Nhận bảng điểm môn
+- Lập báo cáo tổng kết
+- Đăng bài thông báo
+- Xem thông tin thông báo
+- Thay đổi qui định
+- Thêm vai trò người dùng
+- Cho học sinh lên lớp
 
 ## [](https://github.com/pzcuong/QuanLyHocSinh/tree/master#c%C3%B4ng-ngh%E1%BB%87-s%E1%BB%AD-d%E1%BB%A5ng)Công nghệ sử dụng
 
